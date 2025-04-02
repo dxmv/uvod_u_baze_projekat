@@ -1,0 +1,1 @@
+https://my.vertabelo.com/logical/model/PoUiBAxpjYhQwFni0MPD2Sjlc9PGc9m5
