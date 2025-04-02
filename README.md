@@ -1,9 +1,13 @@
 - [ ] **1. Model baze podataka**
-    - [ ] Napraviti model baze (ER dijagram) za sistem Savetovališta „Novi početak“.
-    - [ ] Definisati tabele, primarne ključeve i međusobne veze prema opisu.
+    - [ ] Logicki model
+        - [ ] Napraviti model baze (ER dijagram) za sistem Savetovališta „Novi početak“.
+        - [ ] Definisati tabele, primarne ključeve i međusobne veze prema opisu.
+    - [ ] Fizicki model iz logickog modela
+        - [ ] Popraviti ako nesto treba
+    - [ ] Generisati DDL skriptu iz fizickog modela 
 
 - [ ] **2. Baza podataka**
-    - [ ] Kreirati fizičku bazu podataka iz modela.
+    - [ ] Kreirati lokalnu bazu iz skripte
     - [ ] Popuniti bazu relevantnim podacima (po 10 redova ukoliko je izvodljivo).
 
 - [ ] **3. Indeksi i jedinstveni ključevi**
