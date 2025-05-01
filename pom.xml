@@ -18,12 +18,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17.0.6</version>
+            <version>21.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>17.0.6</version>
+            <version>21.0.2</version>
         </dependency>
 
         <dependency>
@@ -67,6 +67,10 @@
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
+                            <options>
+                                <option>--add-modules=javafx.controls,javafx.fxml</option>
+                                <option>--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</option>
+                            </options>
                         </configuration>
                     </execution>
                 </executions>
