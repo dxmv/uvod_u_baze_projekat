@@ -1,18 +1,18 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2025-04-30 20:07:56.444
+-- Last modification date: 2025-05-01 20:56:13.846
 
 -- tables
 -- Table: BeleskeSeanse
 CREATE TABLE BeleskeSeanse (
-    belskeId int  NOT NULL,
+    beleskeId int  NOT NULL AUTO_INCREMENT,
     text longtext  NOT NULL,
     fk_seansaId int  NOT NULL,
-    CONSTRAINT BeleskeSeanse_pk PRIMARY KEY (belskeId,fk_seansaId)
+    CONSTRAINT BeleskeSeanse_pk PRIMARY KEY (beleskeId)
 );
 
 -- Table: CenaPoSatu
 CREATE TABLE CenaPoSatu (
-    cenaId int  NOT NULL,
+    cenaId int  NOT NULL AUTO_INCREMENT,
     cena decimal(12,2)  NOT NULL,
     datumPromene date  NOT NULL,
     fk_seansaId int  NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE CenaPoSatu (
 
 -- Table: CentarZaObuku
 CREATE TABLE CentarZaObuku (
-    centarId int  NOT NULL,
+    centarId int  NOT NULL AUTO_INCREMENT,
     naziv nvarchar(32)  NOT NULL,
     email nvarchar(32)  NOT NULL,
     brojTelefona nvarchar(16)  NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE CentarZaObuku (
 
 -- Table: Fakultet
 CREATE TABLE Fakultet (
-    fakultetId int  NOT NULL,
+    fakultetId int  NOT NULL AUTO_INCREMENT,
     ime nvarchar(64)  NOT NULL,
     fk_uniId int  NOT NULL,
     CONSTRAINT Fakultet_pk PRIMARY KEY (fakultetId)
@@ -48,7 +48,7 @@ CREATE TABLE Fakultet_Oblast (
 
 -- Table: Kandidat
 CREATE TABLE Kandidat (
-    kandidatId int  NOT NULL,
+    kandidatId int  NOT NULL AUTO_INCREMENT,
     telefon nvarchar(16)  NOT NULL,
     prebivaliste nvarchar(64)  NOT NULL,
     ime nvarchar(32)  NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE Kandidat (
     jmbg nvarchar(16)  NOT NULL,
     datumRodj date  NOT NULL,
     email nvarchar(32)  NOT NULL,
-    psihoterapeut boolean  NOT NULL,
+    psiholog boolean  NOT NULL,
     fk_fakultetId int  NOT NULL,
     fk_centarId int  NOT NULL,
     fk_stepenId int  NOT NULL,
@@ -66,13 +66,13 @@ CREATE TABLE Kandidat (
 
 -- Table: Klijent
 CREATE TABLE Klijent (
-    klijentId int  NOT NULL,
+    klijentId int  NOT NULL AUTO_INCREMENT,
     ime nvarchar(32)  NOT NULL,
     prezime nvarchar(32)  NOT NULL,
-    datumRodj int  NOT NULL,
-    pol longblob  NOT NULL,
+    datumRodj date  NOT NULL,
+    pol varchar(1)  NOT NULL,
     email nvarchar(32)  NOT NULL,
-    telefon int  NOT NULL,
+    telefon nvarchar(16)  NOT NULL,
     datumPrijave date  NOT NULL,
     ranijePosetio boolean  NOT NULL,
     opisProblema longtext  NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE Klijent (
 
 -- Table: Kurs
 CREATE TABLE Kurs (
-    kursId int  NOT NULL,
+    kursId int  NOT NULL AUTO_INCREMENT,
     datumPromene date  NOT NULL,
     kursDInara decimal(12,2)  NOT NULL,
     fk_valutaId int  NOT NULL,
@@ -90,56 +90,57 @@ CREATE TABLE Kurs (
 
 -- Table: ObjavaPodataka
 CREATE TABLE ObjavaPodataka (
-    objavaId int  NOT NULL,
+    objavaId int  NOT NULL AUTO_INCREMENT,
     datumObjave date  NOT NULL,
     primalac longblob  NOT NULL,
     fk_seansaId int  NOT NULL,
+    razlog text  NOT NULL,
     CONSTRAINT ObjavaPodataka_pk PRIMARY KEY (objavaId)
 );
 
 -- Table: Oblast
 CREATE TABLE Oblast (
-    oblastId int  NOT NULL,
+    oblastId int  NOT NULL AUTO_INCREMENT,
     naziv nvarchar(32)  NOT NULL,
     CONSTRAINT Oblast_pk PRIMARY KEY (oblastId)
 );
 
 -- Table: OblastTerapije
 CREATE TABLE OblastTerapije (
-    oblastId int  NOT NULL,
-    ime nvarchar(32)  NOT NULL,
+    oblastId int  NOT NULL AUTO_INCREMENT,
+    ime nvarchar(64)  NOT NULL,
     CONSTRAINT OblastTerapije_pk PRIMARY KEY (oblastId)
 );
 
 -- Table: Placanje
 CREATE TABLE Placanje (
-    placanjeId int  NOT NULL,
+    placanjeId int  NOT NULL AUTO_INCREMENT,
     rata int  NOT NULL COMMENT '1 ili 2, ako je puna rata onda je uvek 1',
     iznos decimal(12,2)  NOT NULL,
     provizija int  NOT NULL,
-    datum int  NOT NULL,
+    datum date  NOT NULL,
     nacinPlacanja nvarchar(16)  NOT NULL,
     Seansa_seansaId int  NOT NULL,
     fk_klijentId int  NOT NULL,
     fk_valutaId int  NOT NULL,
+    svrha text  NOT NULL,
     CONSTRAINT Placanje_pk PRIMARY KEY (placanjeId)
 );
 
 -- Table: PsihoTest
 CREATE TABLE PsihoTest (
-    testId int  NOT NULL,
+    testId int  NOT NULL AUTO_INCREMENT,
     naziv nvarchar(32)  NOT NULL,
     oblast nvarchar(32)  NOT NULL,
     cenaRSD decimal(12,2)  NOT NULL,
-    fk_seansaId int  NOT NULL,
     CONSTRAINT PsihoTest_pk PRIMARY KEY (testId)
 );
 
 -- Table: Seansa
 CREATE TABLE Seansa (
-    seansaId int  NOT NULL,
+    seansaId int  NOT NULL AUTO_INCREMENT,
     datum date  NOT NULL,
-    vremePocetka int  NOT NULL,
+    vremePocetka time  NOT NULL,
     trajanje int  NOT NULL,
     besplatnaSeansa boolean  NOT NULL,
     fk_kandidatId int  NOT NULL,
@@ -151,12 +152,14 @@ CREATE TABLE Seansa (
 CREATE TABLE SeansaTest (
     rezultat int  NOT NULL,
     fk_seansaId int  NOT NULL,
-    CONSTRAINT SeansaTest_pk PRIMARY KEY (fk_seansaId)
+    seansaTestId int  NOT NULL AUTO_INCREMENT,
+    fk_psihoTestId int  NOT NULL,
+    CONSTRAINT SeansaTest_pk PRIMARY KEY (seansaTestId)
 );
 
 -- Table: Sertifikat
 CREATE TABLE Sertifikat (
-    sertId int  NOT NULL,
+    sertId int  NOT NULL AUTO_INCREMENT,
     datumSert date  NOT NULL,
     fk_oblastId int  NOT NULL,
     CONSTRAINT Sertifikat_pk PRIMARY KEY (sertId)
@@ -164,7 +167,7 @@ CREATE TABLE Sertifikat (
 
 -- Table: StepenStudija
 CREATE TABLE StepenStudija (
-    stepenId int  NOT NULL,
+    stepenId int  NOT NULL AUTO_INCREMENT,
     naziv nvarchar(16)  NOT NULL,
     CONSTRAINT StepenStudija_pk PRIMARY KEY (stepenId)
 );
@@ -180,7 +183,7 @@ CREATE TABLE Supervizija (
 
 -- Table: Univerzitet
 CREATE TABLE Univerzitet (
-    uniId int  NOT NULL,
+    uniId int  NOT NULL AUTO_INCREMENT,
     ime nvarchar(64)  NOT NULL,
     fk_usmrenjeId int  NOT NULL,
     CONSTRAINT Univerzitet_pk PRIMARY KEY (uniId)
@@ -188,7 +191,7 @@ CREATE TABLE Univerzitet (
 
 -- Table: UzeUsmerenje
 CREATE TABLE UzeUsmerenje (
-    usmerenjeId int  NOT NULL,
+    usmerenjeId int  NOT NULL AUTO_INCREMENT,
     naziv nvarchar(32)  NOT NULL,
     CONSTRAINT UzeUsmerenje_pk PRIMARY KEY (usmerenjeId)
 );
@@ -202,9 +205,9 @@ CREATE TABLE UzeUsmerenje_Oblast (
 
 -- Table: Valuta
 CREATE TABLE Valuta (
-    valutaId int  NOT NULL,
+    valutaId int  NOT NULL AUTO_INCREMENT,
     sifra nvarchar(4)  NOT NULL,
-    puniNaziv nvarchar(32)  NOT NULL,
+    puniNaziv nvarchar(64)  NOT NULL,
     CONSTRAINT Valuta_pk PRIMARY KEY (valutaId)
 );
 
@@ -269,9 +272,9 @@ ALTER TABLE Placanje ADD CONSTRAINT Placanje_Seansa FOREIGN KEY Placanje_Seansa 
 ALTER TABLE Placanje ADD CONSTRAINT Placanje_Valuta FOREIGN KEY Placanje_Valuta (fk_valutaId)
     REFERENCES Valuta (valutaId);
 
--- Reference: PsihoTest_SeansaTest (table: PsihoTest)
-ALTER TABLE PsihoTest ADD CONSTRAINT PsihoTest_SeansaTest FOREIGN KEY PsihoTest_SeansaTest (fk_seansaId)
-    REFERENCES SeansaTest (fk_seansaId);
+-- Reference: SeansaTest_PsihoTest (table: SeansaTest)
+ALTER TABLE SeansaTest ADD CONSTRAINT SeansaTest_PsihoTest FOREIGN KEY SeansaTest_PsihoTest (fk_psihoTestId)
+    REFERENCES PsihoTest (testId);
 
 -- Reference: SeansaTest_Seansa (table: SeansaTest)
 ALTER TABLE SeansaTest ADD CONSTRAINT SeansaTest_Seansa FOREIGN KEY SeansaTest_Seansa (fk_seansaId)
@@ -306,4 +309,3 @@ ALTER TABLE UzeUsmerenje_Oblast ADD CONSTRAINT UzeUsmerenje_Oblast_UzeUsmerenje 
     REFERENCES UzeUsmerenje (usmerenjeId);
 
 -- End of file.
-

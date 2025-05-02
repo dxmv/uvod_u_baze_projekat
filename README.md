@@ -1,8 +1,8 @@
 - [x] Logicki model baze
 - [x] Fizcki model baze
 - [ ] Indexi
-- [ ] Napraviti mysql bazu
-- [ ] Napraviti seed.sql, za insertovanje podataka
+- [x] Napraviti mysql bazu
+- [x] Napraviti seed.sql, za insertovanje podataka
 - [ ] Konektovati sa jdbc u java projekat
 - [ ] Forma za pregled svih terapeuta u bazi
 - [ ] Forma za registraciju psihoterapeuta
