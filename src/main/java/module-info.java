@@ -2,12 +2,11 @@ module com.raf.javafxapp {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
-    requires lombok;
-
+    requires static lombok;
     requires java.desktop;
 
-    opens com.raf.javafxapp.Model;
-    opens model to javafx.base;
+    opens model;
     opens com.raf.javafxapp to javafx.fxml;
     exports com.raf.javafxapp;
+
 }

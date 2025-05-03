@@ -1,82 +1,98 @@
 package com.raf.javafxapp.view;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
 
-public class MainFrame extends BorderPane {
-    Stage stage;
+public class MainFrame extends VBox {
+    private Stage stage;
 
     public MainFrame(Stage stage) {
-        this.stage=stage;
-        initializeGUI();
+        this.stage = stage;
+        
+        // Configure VBox
+        setSpacing(15);
+        setPadding(new Insets(20));
+        setAlignment(Pos.CENTER);
+        
+        // Create welcome text
+        Text welcomeText = new Text("Dobrodošli u savetovalište 'Novi početak'");
+        welcomeText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        welcomeText.setTextAlignment(TextAlignment.CENTER);
+        
+        // Create description text
+        Text descriptionText = new Text(
+            "Aplikacija za upravljanje terapeutima, klijentima i sesijama savetovališta"
+        );
+        descriptionText.setStyle("-fx-font-size: 14px;");
+        descriptionText.setTextAlignment(TextAlignment.CENTER);
+        
+        // Create separator
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(10, 0, 10, 0));
+        
+        // Create buttons with consistent styling
+        Button btnLogin = createStyledButton("Prijava");
+        Button btnSignUp = createStyledButton("Registracija");
+        Button btnTherapists = createStyledButton("Psihoterapeuti");
+        Button btnExit = createStyledButton("Izlaz");
+        
+        // Set button actions
+        btnLogin.setOnAction(e -> openLoginView());
+        btnSignUp.setOnAction(e -> openSignUpView());
+         btnTherapists.setOnAction(e -> openTherapistsView());
+        btnExit.setOnAction(e -> System.exit(0));
+        
+        // Add all elements to VBox
+        getChildren().addAll(
+            welcomeText,
+            descriptionText,
+            separator,
+            btnLogin,
+            btnSignUp,
+            btnTherapists,
+            btnExit
+        );
     }
-
-    private void initializeGUI() {
-        // Top: meni bar
-        MenuBar menuBar = createMenuBar();
-        this.setTop(menuBar);
-
-        // Left: navigacija
-        VBox navigationPanel = createNavigationPanel();
-        this.setLeft(navigationPanel);
-
-        // Center: početni prikaz
-        this.setCenter(new Text("Dobrodošli u savetovalište 'Novi početak'"));
+    
+    private Button createStyledButton(String text) {
+        Button btn = new Button(text);
+        btn.setPrefWidth(200);
+        btn.setPrefHeight(40);
+        btn.setStyle("-fx-font-size: 14px;");
+        return btn;
     }
-
-    private MenuBar createMenuBar() {
-        MenuBar menuBar = new MenuBar();
-
-        Menu menuFajl = new Menu("Fajl");
-        MenuItem itemIzlaz = new MenuItem("Izlaz");
-        itemIzlaz.setOnAction(e -> System.exit(0));
-        menuFajl.getItems().add(itemIzlaz);
-
-        Menu menuPomoc = new Menu("Pomoć");
-        MenuItem itemOApp = new MenuItem("O aplikaciji");
-        itemOApp.setOnAction(e -> showAbout());
-        menuPomoc.getItems().add(itemOApp);
-
-        menuBar.getMenus().addAll(menuFajl, menuPomoc);
-        return menuBar;
+    
+    private void openLoginView() {
+        Scene currentScene = stage.getScene();
+        LoginView loginView = new LoginView(stage, currentScene);
+        Scene newScene = new Scene((Parent)loginView, 500, 300);
+        stage.setScene(newScene);
     }
-
-    private VBox createNavigationPanel() {
-        VBox nav = new VBox(10);
-        nav.setPadding(new Insets(10));
-        nav.setStyle("-fx-background-color: #f0f0f0;");
-
-        Button btnTerapeuti = new Button("Terapeuti");
-        Button btnKlijenti = new Button("Klijenti");
-        Button btnSeanse = new Button("Seanse");
-        Button btnUplate = new Button("Uplate");
-
-
-        // Placeholder akcije
-        btnTerapeuti.setOnAction(e -> {
-            Scene currentScene = stage.getScene(); // uzmi trenutnu scenu
-            AllTherapistsView view = new AllTherapistsView(stage, currentScene); // prosledi kao previousScene
-            Scene newScene = new Scene(view, 800, 400); // veće dimenzije da tabela stane lepo
-            stage.setScene(newScene);
-        });
-        btnKlijenti.setOnAction(e -> this.setCenter(new Label("Prikaz klijenata")));
-        btnSeanse.setOnAction(e -> this.setCenter(new Label("Prikaz seansi")));
-        btnUplate.setOnAction(e -> this.setCenter(new Label("Prikaz uplata")));
-
-        nav.getChildren().addAll(btnTerapeuti, btnKlijenti, btnSeanse, btnUplate);
-        return nav;
+    
+    private void openSignUpView() {
+        Scene currentScene = stage.getScene();
+        SignUp signUpView = new SignUp(stage, currentScene);
+        
+        // Using ScrollPane for the large form
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(signUpView);
+        scrollPane.setFitToWidth(true);
+        
+        Scene newScene = new Scene((Parent)scrollPane, 500, 600);
+        stage.setScene(newScene);
     }
-
-    private void showAbout() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("O aplikaciji");
-        alert.setHeaderText("Savetovalište 'Novi početak'");
-        alert.setContentText("Aplikacija za upravljanje radom savetovališta.");
-        alert.showAndWait();
+    
+    private void openTherapistsView() {
+        Scene currentScene = stage.getScene();
+        AllTherapistsView view = new AllTherapistsView(stage, currentScene);
+        Scene newScene = new Scene((Parent)view, 800, 400);
+        stage.setScene(newScene);
     }
 }
