@@ -8,7 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.Candidate;
 import model.Therapist;
+import repository.CandidateRepository;
 import repository.TherapistRepository;
 
 import java.text.SimpleDateFormat;
@@ -113,12 +115,109 @@ public class AllTherapistsView extends VBox {
             therapistRepository.getAllTherapists()
         );
         table.setItems(therapists);
+        
+        // ============ CANDIDATES SECTION ============
+        
+        Label candidatesTitle = new Label("Kandidati u procesu obuke");
+        candidatesTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10 0 5 0;");
+        
+        TableView<Candidate> candidatesTable = new TableView<>();
+        
+        // ID Column
+        TableColumn<Candidate, Integer> candidateIdCol = new TableColumn<>("ID");
+        candidateIdCol.setCellValueFactory(new PropertyValueFactory<>("kandidatId"));
+        
+        // Personal info columns
+        TableColumn<Candidate, String> candidateImeCol = new TableColumn<>("Ime");
+        candidateImeCol.setCellValueFactory(new PropertyValueFactory<>("ime"));
+
+        TableColumn<Candidate, String> candidatePrezimeCol = new TableColumn<>("Prezime");
+        candidatePrezimeCol.setCellValueFactory(new PropertyValueFactory<>("prezime"));
+        
+        TableColumn<Candidate, String> candidateEmailCol = new TableColumn<>("Email");
+        candidateEmailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+        TableColumn<Candidate, String> candidateTelefonCol = new TableColumn<>("Telefon");
+        candidateTelefonCol.setCellValueFactory(new PropertyValueFactory<>("telefon"));
+        
+        TableColumn<Candidate, String> candidatePrebivalisteCol = new TableColumn<>("Prebivalište");
+        candidatePrebivalisteCol.setCellValueFactory(new PropertyValueFactory<>("prebivaliste"));
+        
+        // Birth date column with formatter
+        TableColumn<Candidate, String> candidateDatumRodjCol = new TableColumn<>("Datum rođenja");
+        candidateDatumRodjCol.setCellValueFactory(cellData -> {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            return new javafx.beans.property.SimpleStringProperty(
+                dateFormat.format(cellData.getValue().getDatumRodj())
+            );
+        });
+        
+        // Is Psychologist column
+        TableColumn<Candidate, String> candidatePsihologCol = new TableColumn<>("Psiholog");
+        candidatePsihologCol.setCellValueFactory(cellData -> {
+            boolean isPsiholog = cellData.getValue().isPsiholog();
+            return new javafx.beans.property.SimpleStringProperty(isPsiholog ? "Da" : "Ne");
+        });
+        
+        // Faculty column
+        TableColumn<Candidate, String> candidateFakultetCol = new TableColumn<>("Fakultet");
+        candidateFakultetCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getFakultet().getIme()
+            )
+        );
+        
+        // Education level column
+        TableColumn<Candidate, String> candidateStepenStudijaCol = new TableColumn<>("Stepen studija");
+        candidateStepenStudijaCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getStepenStudija().getNaziv()
+            )
+        );
+        
+        // Training center column
+        TableColumn<Candidate, String> candidateCentarCol = new TableColumn<>("Centar za obuku");
+        candidateCentarCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getCentar().getNaziv()
+            )
+        );
+        
+        // Supervisor column
+        TableColumn<Candidate, String> candidateSupervisorCol = new TableColumn<>("Supervizor");
+        candidateSupervisorCol.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getSupervisor() != null) {
+                return new javafx.beans.property.SimpleStringProperty(
+                    cellData.getValue().getSupervisor().getIme() + " " + 
+                    cellData.getValue().getSupervisor().getPrezime()
+                );
+            } else {
+                return new javafx.beans.property.SimpleStringProperty("Nema supervizora");
+            }
+        });
+
+        candidatesTable.getColumns().addAll(
+            candidateIdCol, candidateImeCol, candidatePrezimeCol, 
+            candidateEmailCol, candidateTelefonCol, candidatePrebivalisteCol, 
+            candidateDatumRodjCol, candidatePsihologCol, candidateFakultetCol, 
+            candidateStepenStudijaCol, candidateCentarCol, candidateSupervisorCol
+        );
+
+        // Enable column reordering
+        candidatesTable.setTableMenuButtonVisible(true);
+        
+        // Get candidates from repository
+        CandidateRepository candidateRepository = new CandidateRepository();
+        ObservableList<Candidate> candidates = FXCollections.observableArrayList(
+            candidateRepository.getAllCandidates()
+        );
+        candidatesTable.setItems(candidates);
 
         Button backButton = new Button("Nazad");
         backButton.setOnAction(e -> stage.setScene(previousScene));
 
         setSpacing(10);
         setPadding(new Insets(10));
-        getChildren().addAll(title, table, backButton);
+        getChildren().addAll(title, table, candidatesTitle, candidatesTable, backButton);
     }
 }
