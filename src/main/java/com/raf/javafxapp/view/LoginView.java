@@ -8,12 +8,15 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import repository.TherapistRepository;
+import com.raf.javafxapp.SessionManager;
 
 public class LoginView extends VBox {
     
     private TextField emailField = new TextField();
     private PasswordField passwordField = new PasswordField();
     private Label statusLabel = new Label();
+    private TherapistRepository therapistRepository = new TherapistRepository();
     
     public LoginView(Stage stage, Scene previousScene) {
         // Set up layout
@@ -50,21 +53,27 @@ public class LoginView extends VBox {
     
     private void handleLogin() {
         String email = emailField.getText();
-        String password = passwordField.getText();
         
         // Vrlo jednostavna validacija
-        if (email.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty()) {
             statusLabel.setText("Molimo unesite email i lozinku.");
             statusLabel.setStyle("-fx-text-fill: red;");
             return;
         }
-        
-        // Ovde bi trebalo implementirati pravu autentikaciju
-        // Za sada samo prikazujemo poruku o uspešnoj prijavi
-        statusLabel.setText("Uspešna prijava!");
-        statusLabel.setStyle("-fx-text-fill: green;");
-        
-        // Nakon uspešne prijave možda biste hteli da pređete na drugi ekran
-        // ili da prikažete poruku dobrodošlice
+
+        int kandidatId = therapistRepository.getTherapistIdByEmail(email);
+
+        if (kandidatId == 0) {
+            statusLabel.setText("Neispravan email ili lozinka.");
+            statusLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+        else {
+            // Store the kandidatId in the session
+            SessionManager.getInstance().setLoggedInKandidatId(kandidatId);
+            
+            statusLabel.setText("Uspešna prijava! ID: " + kandidatId);
+            statusLabel.setStyle("-fx-text-fill: green;");
+        }
     }
 } 

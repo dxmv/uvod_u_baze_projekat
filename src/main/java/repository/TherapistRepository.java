@@ -236,12 +236,25 @@ public class TherapistRepository {
         }
     }
 
-    public static void main(String[] args) {
-        TherapistRepository repo = new TherapistRepository();
-        List<Therapist> therapists = repo.getAllTherapists();
-        for (Therapist therapist : therapists) {
-            System.out.println(therapist.getIme() + " " + therapist.getEmail());
+    public int getTherapistIdByEmail(String email) {
+        int kandidatId = 0;
+        
+        String query = "SELECT kandidatId FROM Kandidat WHERE email = ? LIMIT 1";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setString(1, email);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    kandidatId = rs.getInt("kandidatId");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
+        
+        return kandidatId;
     }
 }
