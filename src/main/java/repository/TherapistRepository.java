@@ -7,7 +7,6 @@ import model.Fakultet;
 import model.Sertifikat;
 import model.StepenStudija;
 import model.OblastTerapije;
-import model.Univerzitet;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
