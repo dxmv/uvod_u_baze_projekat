@@ -60,7 +60,7 @@ public class MainFrame extends BorderPane {
         // Placeholder akcije
         btnTerapeuti.setOnAction(e -> {
             Scene currentScene = stage.getScene(); // uzmi trenutnu scenu
-            AllTherapistsView view = new AllTherapistsView(null,stage, currentScene); // prosledi kao previousScene
+            AllTherapistsView view = new AllTherapistsView(stage, currentScene); // prosledi kao previousScene
             Scene newScene = new Scene(view, 800, 400); // veće dimenzije da tabela stane lepo
             stage.setScene(newScene);
         });

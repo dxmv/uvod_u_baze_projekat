@@ -1,6 +1,5 @@
 package com.raf.javafxapp.view;
 
-import com.raf.javafxapp.Model.Psychotherapist;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -9,103 +8,111 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.Therapist;
+import repository.TherapistRepository;
 
-import java.sql.Connection;
+import java.text.SimpleDateFormat;
 
 public class AllTherapistsView extends VBox {
 
-    public AllTherapistsView(Connection conn, Stage stage, Scene previousScene) {
+    public AllTherapistsView(Stage stage, Scene previousScene) {
         Label title = new Label("Svi psihoterapeuti savetovališta");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        TableView<Psychotherapist> table = new TableView<>();
+        TableView<Therapist> table = new TableView<>();
+        
+        // ID Column
+        TableColumn<Therapist, Integer> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("kandidatId"));
+        
+        // Personal info columns
+        TableColumn<Therapist, String> imeCol = new TableColumn<>("Ime");
+        imeCol.setCellValueFactory(new PropertyValueFactory<>("ime"));
 
-        TableColumn<Psychotherapist, String> nameCol = new TableColumn<>("Ime i prezime");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-
-        TableColumn<Psychotherapist, String> emailCol = new TableColumn<>("Email");
+        TableColumn<Therapist, String> prezimeCol = new TableColumn<>("Prezime");
+        prezimeCol.setCellValueFactory(new PropertyValueFactory<>("prezime"));
+        
+        TableColumn<Therapist, String> emailCol = new TableColumn<>("Email");
         emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        TableColumn<Psychotherapist, String> phoneCol = new TableColumn<>("Telefon");
-        phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
-
-        TableColumn<Psychotherapist, String> specCol = new TableColumn<>("Specijalizacija");
-        specCol.setCellValueFactory(new PropertyValueFactory<>("specialization"));
-
-        TableColumn<Psychotherapist, String> bioCol = new TableColumn<>("Biografija");
-        bioCol.setCellValueFactory(new PropertyValueFactory<>("biography"));
-
-        // Formatiranje za prelazak u novi red ako ima \n
-        bioCol.setCellFactory(column -> new TableCell<>() {
-            private final TextArea textArea = new TextArea();
-
-            {
-                textArea.setWrapText(true);
-                textArea.setEditable(false);
-                textArea.setPrefHeight(100);
-                setGraphic(textArea);
-            }
-
-            @Override
-            protected void updateItem(String bio, boolean empty) {
-                super.updateItem(bio, empty);
-                if (empty || bio == null) {
-                    setText(null);
-                    textArea.setText(null);
-                } else {
-                    textArea.setText(bio);
-                }
-            }
+        TableColumn<Therapist, String> telefonCol = new TableColumn<>("Telefon");
+        telefonCol.setCellValueFactory(new PropertyValueFactory<>("telefon"));
+        
+        TableColumn<Therapist, String> prebivalisteCol = new TableColumn<>("Prebivalište");
+        prebivalisteCol.setCellValueFactory(new PropertyValueFactory<>("prebivaliste"));
+        
+        // Birth date column with formatter
+        TableColumn<Therapist, String> datumRodjCol = new TableColumn<>("Datum rođenja");
+        datumRodjCol.setCellValueFactory(cellData -> {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            return new javafx.beans.property.SimpleStringProperty(
+                dateFormat.format(cellData.getValue().getDatumRodj())
+            );
         });
-
-        table.getColumns().addAll(nameCol, emailCol, phoneCol, specCol, bioCol);
-
-        ObservableList<Psychotherapist> data = FXCollections.observableArrayList(
-                new Psychotherapist(
-                        "Dr Ana Petrović",
-                        "ana.petrovic@example.com",
-                        "0612345678",
-                        "Kognitivno-bihejvioralna terapija",
-                        "Dr Ana Petrović je licencirani psihoterapeut sa preko 10 godina iskustva u radu sa adolescentima.\nZavršila je edukaciju u oblasti KBT-a i učestvovala na brojnim stručnim seminarima."
-                ),
-                new Psychotherapist(
-                        "Milan Jovanović",
-                        "milan.jovanovic@example.com",
-                        "0623456789",
-                        "Porodična terapija",
-                        "Milan Jovanović se bavi porodičnom terapijom i ima veliko iskustvo u radu sa bračnim parovima.\nAutor je više stručnih članaka na temu porodične dinamike."
-                ),
-                new Psychotherapist(
-                        "Jelena Marković",
-                        "jelena.markovic@example.com",
-                        "0634567890",
-                        "Psihodinamska terapija",
-                        "Jelena Marković koristi psihodinamski pristup u radu sa klijentima koji pate od anksioznosti i depresije.\nČlan je Udruženja psihoterapeuta Srbije."
-                )
+        
+        // Is Psychologist column
+        TableColumn<Therapist, String> psihologCol = new TableColumn<>("Psiholog");
+        psihologCol.setCellValueFactory(cellData -> {
+            boolean isPsiholog = cellData.getValue().isPsiholog();
+            return new javafx.beans.property.SimpleStringProperty(isPsiholog ? "Da" : "Ne");
+        });
+        
+        // Faculty column
+        TableColumn<Therapist, String> fakultetCol = new TableColumn<>("Fakultet");
+        fakultetCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getFakultet().getIme()
+            )
+        );
+        
+        // Education level column
+        TableColumn<Therapist, String> stepenStudijaCol = new TableColumn<>("Stepen studija");
+        stepenStudijaCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getStepenStudija().getNaziv()
+            )
+        );
+        
+        // Center column
+        TableColumn<Therapist, String> centarCol = new TableColumn<>("Centar za obuku");
+        centarCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getCentar().getNaziv()
+            )
+        );
+        
+        // Certificate date column
+        TableColumn<Therapist, String> datumSertCol = new TableColumn<>("Datum sertifikata");
+        datumSertCol.setCellValueFactory(cellData -> {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            return new javafx.beans.property.SimpleStringProperty(
+                dateFormat.format(cellData.getValue().getSertifikat().getDatumSert())
+            );
+        });
+        
+        // Therapy area column
+        TableColumn<Therapist, String> oblastCol = new TableColumn<>("Oblast terapije");
+        oblastCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getSertifikat().getOblast().getIme()
+            )
         );
 
-//        try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM psihoterapeut");
-//             ResultSet rs = stmt.executeQuery()) {
-//
-//            while (rs.next()) {
-//                String fullName = rs.getString("ime") + " " + rs.getString("prezime");
-//                String email = rs.getString("email");
-//                String phone = rs.getString("telefon");
-//                String specialization = rs.getString("specijalizacija");
-//                String biography = rs.getString("biografija");
-//
-//                // Ako želiš da biografija ide u novi red svaki put posle npr. 60 karaktera:
-//                biography = wrapText(biography, 60);
-//
-//                Psychotherapist pt = new Psychotherapist(fullName, email, phone, specialization, biography);
-//                data.add(pt);
-//            }
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        table.getColumns().addAll(
+            idCol, imeCol, prezimeCol, emailCol, telefonCol, prebivalisteCol, 
+            datumRodjCol, psihologCol, fakultetCol, stepenStudijaCol,
+            centarCol, datumSertCol, oblastCol
+        );
 
-        table.setItems(data);
+        // Enable column reordering
+        table.setTableMenuButtonVisible(true);
+        
+        // Get therapists from repository
+        TherapistRepository therapistRepository = new TherapistRepository();
+        ObservableList<Therapist> therapists = FXCollections.observableArrayList(
+            therapistRepository.getAllTherapists()
+        );
+        table.setItems(therapists);
 
         Button backButton = new Button("Nazad");
         backButton.setOnAction(e -> stage.setScene(previousScene));
@@ -113,20 +120,5 @@ public class AllTherapistsView extends VBox {
         setSpacing(10);
         setPadding(new Insets(10));
         getChildren().addAll(title, table, backButton);
-    }
-
-    private String wrapText(String text, int wrapLength) {
-        StringBuilder sb = new StringBuilder(text);
-        int i = wrapLength;
-        while (i < sb.length()) {
-            int spaceIndex = sb.lastIndexOf(" ", i);
-            if (spaceIndex != -1) {
-                sb.replace(spaceIndex, spaceIndex + 1, "\n");
-                i = spaceIndex + wrapLength + 1;
-            } else {
-                break;
-            }
-        }
-        return sb.toString();
     }
 }
