@@ -22,35 +22,4 @@ public class DatabaseConnection {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
-    
-    /**
-     * Test the connection
-     */
-    public static void testConnection() {
-        try {
-            // Register JDBC driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            // Open a connection
-            System.out.println("Connecting to database...");
-            Connection connection = getConnection();
-            
-            if (connection != null) {
-                System.out.println("Connection successful!");
-                connection.close();
-            } else {
-                System.out.println("Failed to connect to database!");
-            }
-            
-        } catch (ClassNotFoundException e) {
-            System.out.println("MySQL JDBC Driver not found!");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.out.println("Connection failed! Error: " + e.getMessage());
-        }
-    }
-    
-    public static void main(String[] args) {
-        testConnection();
-    }
-} 
+}
