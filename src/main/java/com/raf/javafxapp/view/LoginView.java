@@ -8,6 +8,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
 import repository.TherapistRepository;
 import com.raf.javafxapp.SessionManager;
 
@@ -17,8 +18,11 @@ public class LoginView extends VBox {
     private PasswordField passwordField = new PasswordField();
     private Label statusLabel = new Label();
     private TherapistRepository therapistRepository = new TherapistRepository();
+    private Stage stage;
     
     public LoginView(Stage stage, Scene previousScene) {
+        this.stage = stage;
+        
         // Set up layout
         setSpacing(10);
         setPadding(new Insets(20));
@@ -74,6 +78,16 @@ public class LoginView extends VBox {
             
             statusLabel.setText("Uspešna prijava! ID: " + kandidatId);
             statusLabel.setStyle("-fx-text-fill: green;");
+            
+            // Show temporary success message, then redirect after a short delay
+            redirectToMainScreen();
         }
+    }
+    
+    private void redirectToMainScreen() {
+        // Create and display the main frame with updated buttons
+        MainFrame mainFrame = new MainFrame(stage);
+        Scene mainScene = new Scene((Parent)mainFrame, 500, 500);
+        stage.setScene(mainScene);
     }
 } 
