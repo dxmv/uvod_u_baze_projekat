@@ -182,25 +182,12 @@ public class AllTherapistsView extends VBox {
                 cellData.getValue().getCentar().getNaziv()
             )
         );
-        
-        // Supervisor column
-        TableColumn<Candidate, String> candidateSupervisorCol = new TableColumn<>("Supervizor");
-        candidateSupervisorCol.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getSupervisor() != null) {
-                return new javafx.beans.property.SimpleStringProperty(
-                    cellData.getValue().getSupervisor().getIme() + " " + 
-                    cellData.getValue().getSupervisor().getPrezime()
-                );
-            } else {
-                return new javafx.beans.property.SimpleStringProperty("Nema supervizora");
-            }
-        });
 
         candidatesTable.getColumns().addAll(
             candidateIdCol, candidateImeCol, candidatePrezimeCol, 
             candidateEmailCol, candidateTelefonCol, candidatePrebivalisteCol, 
             candidateDatumRodjCol, candidatePsihologCol, candidateFakultetCol, 
-            candidateStepenStudijaCol, candidateCentarCol, candidateSupervisorCol
+            candidateStepenStudijaCol, candidateCentarCol
         );
 
         // Enable column reordering

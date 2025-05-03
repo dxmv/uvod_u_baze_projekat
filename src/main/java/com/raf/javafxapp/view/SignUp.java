@@ -4,22 +4,17 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.CentarZaObuku;
 import model.Fakultet;
 import model.OblastTerapije;
 import model.StepenStudija;
-import repository.CentarZaObukuRepository;
-import repository.FakultetRepository;
-import repository.OblastTerapijeRepository;
-import repository.StepenStudijaRepository;
-import repository.TherapistRepository;
+import repository.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.Map;
 
 public class SignUp extends VBox {
 
@@ -34,16 +29,29 @@ public class SignUp extends VBox {
     private TextField prebivalisteField = new TextField();
     private CheckBox psihologCheckBox = new CheckBox("Psiholog");
     
-    // Education and certification fields
+    // Education fields
     private ComboBox<Fakultet> fakultetComboBox = new ComboBox<>();
     private ComboBox<StepenStudija> stepenStudijaComboBox = new ComboBox<>();
     private ComboBox<CentarZaObuku> centarZaObukuComboBox = new ComboBox<>();
+    
+    // Toggle between Therapist and Candidate
+    private ToggleGroup registrationType = new ToggleGroup();
+    private RadioButton therapistRadio = new RadioButton("Terapeut (sa sertifikatom)");
+    private RadioButton candidateRadio = new RadioButton("Kandidat (supervizija)");
+    
+    // Certificate fields (for Therapist)
+    private VBox certificateBox = new VBox(10);
     private ComboBox<OblastTerapije> oblastTerapijeComboBox = new ComboBox<>();
     private DatePicker datumSertifikataField = new DatePicker();
-
+    
+    // Supervision fields (for Candidate)
+    private VBox supervisionBox = new VBox(10);
+    private ComboBox<String> supervisorComboBox = new ComboBox<>();
+    private DatePicker datumSupervizijePocetakField = new DatePicker();
 
     private Label statusLabel = new Label();
     private TherapistRepository therapistRepository = new TherapistRepository();
+    private CandidateRepository candidateRepository = new CandidateRepository();
 
     public SignUp(Stage stage, Scene previousScene) {
         // Set up layout
@@ -51,7 +59,7 @@ public class SignUp extends VBox {
         setPadding(new Insets(20));
 
         // Create title
-        Label title = new Label("Registracija psihoterapeuta");
+        Label title = new Label("Registracija");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         // Set prompts for all fields
@@ -77,15 +85,56 @@ public class SignUp extends VBox {
         // Set date picker to current date
         datumRodjField.setValue(LocalDate.of(1990, 1, 15));
         datumSertifikataField.setValue(LocalDate.of(2022, 6, 10));
+        datumSupervizijePocetakField.setValue(LocalDate.now());
+        
+        // Set up the radio buttons
+        therapistRadio.setToggleGroup(registrationType);
+        candidateRadio.setToggleGroup(registrationType);
+        therapistRadio.setSelected(true);
+        
+        HBox radioBox = new HBox(20);
+        radioBox.getChildren().addAll(therapistRadio, candidateRadio);
+        
+        // Setup certificate section
+        certificateBox.getChildren().addAll(
+            new Label("Oblast terapije:"),
+            oblastTerapijeComboBox,
+            new Label("Datum sertifikata:"),
+            datumSertifikataField
+        );
+        
+        // Setup supervision section
+        supervisionBox.getChildren().addAll(
+            new Label("Supervizor:"),
+            supervisorComboBox,
+            new Label("Datum početka supervizije:"),
+            datumSupervizijePocetakField
+        );
+        
+        // Set up toggle behavior
+        registrationType.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == therapistRadio) {
+                getChildren().remove(supervisionBox);
+                if (!getChildren().contains(certificateBox)) {
+                    getChildren().add(getChildren().indexOf(radioBox) + 1, certificateBox);
+                }
+            } else {
+                getChildren().remove(certificateBox);
+                if (!getChildren().contains(supervisionBox)) {
+                    getChildren().add(getChildren().indexOf(radioBox) + 1, supervisionBox);
+                }
+            }
+        });
         
         // Load data for combo boxes
         loadFakulteti();
         loadStepenStudija();
         loadCentriZaObuku();
         loadOblastiTerapije();
+        loadSupervisors();
         
         // Create buttons
-        Button registerButton = new Button("Registruj se");
+        Button registerButton = new Button("Registruj");
         registerButton.setOnAction(e -> handleRegister());
         
         Button backButton = new Button("Nazad");
@@ -112,19 +161,14 @@ public class SignUp extends VBox {
                 fakultetComboBox,
                 new Label("Stepen studija:"),
                 stepenStudijaComboBox,
-                
-                // Certification section
-                new Label("Sertifikacija:"),
                 new Label("Centar za obuku:"),
                 centarZaObukuComboBox,
-                new Label("Oblast terapije:"),
-                oblastTerapijeComboBox,
-                new Label("Datum sertifikata:"),
-                datumSertifikataField,
-
-                // Original fields (kept for compatibility)
-                new Label("Dodatni podaci:"),
-
+                
+                // Registration type selection
+                new Label("Tip registracije:"),
+                radioBox,
+                certificateBox, // Default is therapist with certificate
+                
                 registerButton,
                 backButton,
                 statusLabel
@@ -231,6 +275,19 @@ public class SignUp extends VBox {
             oblastTerapijeComboBox.getSelectionModel().selectFirst();
         }
     }
+    
+    private void loadSupervisors() {
+        TherapistRepository repository = new TherapistRepository();
+        Map<String, String> therapistMap = repository.getAllTherapistNamesAndJmbgs();
+        
+        // Convert the map to a list of supervisor names
+        supervisorComboBox.setItems(FXCollections.observableArrayList(therapistMap.keySet()));
+        
+        // Select first item if available
+        if (!supervisorComboBox.getItems().isEmpty()) {
+            supervisorComboBox.getSelectionModel().selectFirst();
+        }
+    }
 
     private void handleRegister() {
         try {
@@ -248,36 +305,91 @@ public class SignUp extends VBox {
             Fakultet fakultet = fakultetComboBox.getValue();
             StepenStudija stepenStudija = stepenStudijaComboBox.getValue();
             CentarZaObuku centarZaObuku = centarZaObukuComboBox.getValue();
-            OblastTerapije oblastTerapije = oblastTerapijeComboBox.getValue();
-            LocalDate datumSertifikata = datumSertifikataField.getValue();
             
-            // Validate required fields
+            // Validate common required fields
             if (ime.isEmpty() || prezime.isEmpty() || email.isEmpty() || 
                 telefon.isEmpty() || jmbg.isEmpty() || prebivaliste.isEmpty() || 
                 datumRodj == null || fakultet == null || stepenStudija == null || 
-                centarZaObuku == null || oblastTerapije == null || datumSertifikata == null) {
+                centarZaObuku == null) {
                 
-                statusLabel.setText("Molimo popunite sva polja.");
+                statusLabel.setText("Molimo popunite sva obavezna polja.");
                 statusLabel.setStyle("-fx-text-fill: red;");
                 return;
             }
             
-            // Register therapist using repository
-            boolean success = therapistRepository.registerTherapist(
-                ime, 
-                prezime, 
-                email, 
-                telefon, 
-                jmbg, 
-                datumRodj, 
-                prebivaliste, 
-                isPsiholog,
-                fakultet.getIme(),
-                stepenStudija.getNaziv(),
-                centarZaObuku.getNaziv(),
-                oblastTerapije.getIme(),
-                datumSertifikata
-            );
+            boolean success = false;
+            
+            // Registering as a therapist
+            if (therapistRadio.isSelected()) {
+                OblastTerapije oblastTerapije = oblastTerapijeComboBox.getValue();
+                LocalDate datumSertifikata = datumSertifikataField.getValue();
+                
+                if (oblastTerapije == null || datumSertifikata == null) {
+                    statusLabel.setText("Molimo popunite sve podatke o sertifikatu.");
+                    statusLabel.setStyle("-fx-text-fill: red;");
+                    return;
+                }
+                
+                // Register therapist using repository
+                success = therapistRepository.registerTherapist(
+                    ime, 
+                    prezime, 
+                    email, 
+                    telefon, 
+                    jmbg, 
+                    datumRodj, 
+                    prebivaliste, 
+                    isPsiholog,
+                    fakultet.getIme(),
+                    stepenStudija.getNaziv(),
+                    centarZaObuku.getNaziv(),
+                    oblastTerapije.getIme(),
+                    datumSertifikata
+                );
+            } 
+            // Registering as a candidate
+            else {
+                String supervisorName = supervisorComboBox.getValue();
+                LocalDate datumSupervizije = datumSupervizijePocetakField.getValue();
+                
+                if (supervisorName == null || datumSupervizije == null) {
+                    statusLabel.setText("Molimo popunite sve podatke o superviziji.");
+                    statusLabel.setStyle("-fx-text-fill: red;");
+                    return;
+                }
+                
+                // Get JMBG of the selected supervisor directly from the map
+                TherapistRepository therapistRepo = new TherapistRepository();
+                Map<String, String> therapistMap = therapistRepo.getAllTherapistNamesAndJmbgs();
+                String supervisorJmbg = therapistMap.get(supervisorName);
+                
+                if (supervisorJmbg == null) {
+                    statusLabel.setText("Greška: Ne mogu da pronađem JMBG izabranog supervizora.");
+                    statusLabel.setStyle("-fx-text-fill: red;");
+                    return;
+                }
+                
+                // Create a basic candidate model for insertion
+                model.Candidate candidate = new model.Candidate();
+                candidate.setIme(ime);
+                candidate.setPrezime(prezime);
+                candidate.setEmail(email);
+                candidate.setTelefon(telefon);
+                candidate.setJmbg(jmbg);
+                candidate.setDatumRodj(java.sql.Date.valueOf(datumRodj));
+                candidate.setPrebivaliste(prebivaliste);
+                candidate.setPsiholog(isPsiholog);
+                candidate.setFakultet(fakultet);
+                candidate.setStepenStudija(stepenStudija);
+                candidate.setCentar(centarZaObuku);
+                
+                // Register candidate using repository
+                success = candidateRepository.insert(
+                    candidate,
+                    supervisorJmbg,
+                    java.sql.Date.valueOf(datumSupervizije)
+                );
+            }
             
             if (success) {
                 statusLabel.setText("Registracija uspešna!");
@@ -306,6 +418,7 @@ public class SignUp extends VBox {
         psihologCheckBox.setSelected(false);
         datumRodjField.setValue(LocalDate.now());
         datumSertifikataField.setValue(LocalDate.now());
+        datumSupervizijePocetakField.setValue(LocalDate.now());
         
         // Reset combo boxes to first item
         if (!fakultetComboBox.getItems().isEmpty()) {
@@ -319,6 +432,9 @@ public class SignUp extends VBox {
         }
         if (!oblastTerapijeComboBox.getItems().isEmpty()) {
             oblastTerapijeComboBox.getSelectionModel().selectFirst();
+        }
+        if (!supervisorComboBox.getItems().isEmpty()) {
+            supervisorComboBox.getSelectionModel().selectFirst();
         }
     }
 }

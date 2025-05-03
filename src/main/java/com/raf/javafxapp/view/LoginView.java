@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import repository.TherapistRepository;
 import com.raf.javafxapp.SessionManager;
+import java.util.Map;
 
 public class LoginView extends VBox {
     
@@ -65,7 +66,9 @@ public class LoginView extends VBox {
             return;
         }
 
-        int kandidatId = therapistRepository.getTherapistIdByEmail(email);
+        Map<String, Object> therapistInfo = therapistRepository.getTherapistInfoByEmail(email);
+        int kandidatId = (Integer) therapistInfo.get("id");
+        boolean isCertified = (Boolean) therapistInfo.get("isCertified");
 
         if (kandidatId == 0) {
             statusLabel.setText("Neispravan email ili lozinka.");
@@ -73,10 +76,12 @@ public class LoginView extends VBox {
             return;
         }
         else {
-            // Store the kandidatId in the session
+            // Store the kandidatId and certification status in the session
             SessionManager.getInstance().setLoggedInKandidatId(kandidatId);
+            SessionManager.getInstance().setTherapistCertified(isCertified);
             
-            statusLabel.setText("Uspešna prijava! ID: " + kandidatId);
+            statusLabel.setText("Uspešna prijava! ID: " + kandidatId + 
+                               (isCertified ? " (Sertifikovan)" : " (Nije sertifikovan)"));
             statusLabel.setStyle("-fx-text-fill: green;");
             
             // Show temporary success message, then redirect after a short delay

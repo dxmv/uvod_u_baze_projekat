@@ -16,7 +16,9 @@ import java.sql.CallableStatement;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TherapistRepository {
 
@@ -236,10 +238,19 @@ public class TherapistRepository {
         }
     }
 
-    public int getTherapistIdByEmail(String email) {
-        int kandidatId = 0;
+
+    /**
+     * Checks if a therapist is certified based on email and returns ID and certification status
+     * 
+     * @param email Therapist's email
+     * @return Map containing 'id' and 'isCertified' values
+     */
+    public Map<String, Object> getTherapistInfoByEmail(String email) {
+        Map<String, Object> therapistInfo = new HashMap<>();
+        therapistInfo.put("id", 0);
+        therapistInfo.put("isCertified", false);
         
-        String query = "SELECT kandidatId FROM Kandidat WHERE email = ? LIMIT 1";
+        String query = "SELECT kandidatId, fk_sertId FROM Kandidat WHERE email = ? LIMIT 1";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -248,13 +259,48 @@ public class TherapistRepository {
             
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    kandidatId = rs.getInt("kandidatId");
+                    int kandidatId = rs.getInt("kandidatId");
+                    Object sertId = rs.getObject("fk_sertId");
+                    boolean isCertified = (sertId != null);
+                    
+                    therapistInfo.put("id", kandidatId);
+                    therapistInfo.put("isCertified", isCertified);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         
-        return kandidatId;
+        return therapistInfo;
     }
+
+    /**
+     * Get all therapist names and JMBGs
+     * 
+     * @return A map with key=full name and value=JMBG
+     */
+    public Map<String, String> getAllTherapistNamesAndJmbgs() {
+        Map<String, String> therapistNamesAndJmbgs = new HashMap<>();
+        
+        // Query to get names and JMBGs
+        String query = "SELECT k.ime, k.prezime, k.jmbg " +
+                       "FROM Kandidat k " +
+                       "WHERE k.fk_sertId IS NOT NULL";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                String fullName = rs.getString("ime") + " " + rs.getString("prezime");
+                String jmbg = rs.getString("jmbg");
+                therapistNamesAndJmbgs.put(fullName, jmbg);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return therapistNamesAndJmbgs;
+    }
+
 }

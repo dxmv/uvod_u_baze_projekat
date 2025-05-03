@@ -9,29 +9,34 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import com.raf.javafxapp.SessionManager;
 import repository.TherapistRepository;
+import repository.CandidateRepository;
 import model.Therapist;
+import model.Candidate;
 
 public class TherapistProfileView extends VBox {
     
     private int therapistId;
+    private boolean isCertified;
     private Label nameLabel = new Label();
     private Label emailLabel = new Label();
     private Label jmbgLabel = new Label();
     private Label phoneLabel = new Label();
     private Label educationLabel = new Label();
     private Label certificationLabel = new Label();
-    private TherapistRepository repository = new TherapistRepository();
+    private TherapistRepository therapistRepository = new TherapistRepository();
+    private CandidateRepository candidateRepository = new CandidateRepository();
     
     public TherapistProfileView(Stage stage, Scene previousScene) {
         // Set up layout
         setSpacing(10);
         setPadding(new Insets(20));
         
-        // Get current therapist ID from session
+        // Get current user ID and certification status from session
         therapistId = SessionManager.getInstance().getLoggedInKandidatId();
+        isCertified = SessionManager.getInstance().isTherapistCertified();
         
         // Create title
-        Label title = new Label("Profil terapeuta");
+        Label title = new Label(isCertified ? "Profil terapeuta" : "Profil kandidata");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         
         // Create placeholder labels
@@ -42,9 +47,9 @@ public class TherapistProfileView extends VBox {
         educationLabel.setText("Obrazovanje: ");
         certificationLabel.setText("Sertifikacija: ");
         
-        // Get therapist data if available
+        // Get user data if available
         if (therapistId > 0) {
-            loadTherapistData();
+            loadUserData();
         } else {
             nameLabel.setText("Greška: Korisnik nije prijavljen");
         }
@@ -72,11 +77,16 @@ public class TherapistProfileView extends VBox {
         );
     }
     
+    private void loadUserData() {
+        if (isCertified) {
+            loadTherapistData();
+        } else {
+            loadCandidateData();
+        }
+    }
+    
     private void loadTherapistData() {
-        // In a real implementation, this would fetch data from the repository
-        // For now, we'll just display the ID and placeholder information
-        
-        Therapist therapist = repository.getTherapistById(therapistId);
+        Therapist therapist = therapistRepository.getTherapistById(therapistId);
         
         if (therapist != null) {
             // Populate with real data
@@ -96,12 +106,39 @@ public class TherapistProfileView extends VBox {
             certificationLabel.setText(certification);
         } else {
             // No data found, show error
-            nameLabel.setText("Greška: Podaci za korisnika sa ID " + therapistId + " nisu pronađeni");
-            emailLabel.setText("");
-            jmbgLabel.setText("");
-            phoneLabel.setText("");
-            educationLabel.setText("");
-            certificationLabel.setText("");
+            displayUserNotFoundError();
         }
+    }
+    
+    private void loadCandidateData() {
+        Candidate candidate = candidateRepository.getCandidateById(therapistId);
+        
+        if (candidate != null) {
+            // Populate with real data
+            nameLabel.setText("Ime i prezime: " + candidate.getIme() + " " + candidate.getPrezime());
+            emailLabel.setText("Email: " + candidate.getEmail());
+            jmbgLabel.setText("JMBG: " + candidate.getJmbg());
+            phoneLabel.setText("Telefon: " + candidate.getTelefon());
+            
+            String education = "Obrazovanje: " + 
+                               candidate.getFakultet().getIme() + ", " + 
+                               candidate.getStepenStudija().getNaziv();
+            educationLabel.setText(education);
+            
+            // For candidates, no certification info
+            certificationLabel.setText("Status: Kandidat (U procesu sertifikacije)");
+        } else {
+            // No data found, show error
+            displayUserNotFoundError();
+        }
+    }
+    
+    private void displayUserNotFoundError() {
+        nameLabel.setText("Greška: Podaci za korisnika sa ID " + therapistId + " nisu pronađeni");
+        emailLabel.setText("");
+        jmbgLabel.setText("");
+        phoneLabel.setText("");
+        educationLabel.setText("");
+        certificationLabel.setText("");
     }
 }

@@ -10,10 +10,12 @@ public class SessionManager {
     
     // Session data
     private int loggedInKandidatId;
+    private boolean isTherapistCertified;
     
     // Private constructor to prevent instantiation
     private SessionManager() {
         loggedInKandidatId = 0; // 0 means no one is logged in
+        isTherapistCertified = false;
     }
     
     /**
@@ -36,11 +38,27 @@ public class SessionManager {
     }
     
     /**
+     * Sets the certification status of the logged-in therapist
+     * @param isCertified Whether the therapist is certified
+     */
+    public void setTherapistCertified(boolean isCertified) {
+        this.isTherapistCertified = isCertified;
+    }
+    
+    /**
      * Gets the ID of the logged-in kandidat
      * @return The kandidat ID, or 0 if no one is logged in
      */
     public int getLoggedInKandidatId() {
         return loggedInKandidatId;
+    }
+    
+    /**
+     * Gets the certification status of the logged-in therapist
+     * @return true if therapist is certified, false otherwise
+     */
+    public boolean isTherapistCertified() {
+        return isTherapistCertified;
     }
     
     /**
@@ -56,5 +74,6 @@ public class SessionManager {
      */
     public void clearSession() {
         loggedInKandidatId = 0;
+        isTherapistCertified = false;
     }
 } 
