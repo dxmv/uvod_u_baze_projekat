@@ -12,6 +12,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.CallableStatement;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,6 +171,69 @@ public class TherapistRepository {
         }
         
         return therapist;
+    }
+
+    /**
+     * Registers a new therapist using the insert_terapeut stored procedure.
+     * 
+     * @param ime Therapist's first name
+     * @param prezime Therapist's last name
+     * @param email Therapist's email
+     * @param telefon Therapist's phone number
+     * @param jmbg Therapist's JMBG (unique ID number)
+     * @param datumRodj Therapist's date of birth
+     * @param prebivaliste Therapist's place of residence
+     * @param isPsiholog Whether the therapist is a psychologist
+     * @param fakultet Selected faculty name
+     * @param stepenStudija Education level name
+     * @param centarZaObuku Training center name
+     * @param oblastTerapije Therapy field name
+     * @param datumSertifikata Certificate date
+     * @return true if registration was successful, false otherwise
+     */
+    public boolean registerTherapist(
+            String ime, 
+            String prezime, 
+            String email, 
+            String telefon, 
+            String jmbg, 
+            LocalDate datumRodj, 
+            String prebivaliste, 
+            boolean isPsiholog,
+            String fakultet, 
+            String stepenStudija, 
+            String centarZaObuku, 
+            String oblastTerapije, 
+            LocalDate datumSertifikata) {
+        
+        String callProcedure = "{CALL insert_terapeut(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(callProcedure)) {
+            
+            // Set all parameters in the order defined in the procedure
+            stmt.setString(1, ime);
+            stmt.setString(2, prezime);
+            stmt.setString(3, email);
+            stmt.setString(4, telefon);
+            stmt.setString(5, jmbg);
+            stmt.setDate(6, Date.valueOf(datumRodj));
+            stmt.setString(7, prebivaliste);
+            stmt.setBoolean(8, isPsiholog);
+            stmt.setString(9, fakultet);
+            stmt.setString(10, stepenStudija);
+            stmt.setString(11, centarZaObuku);
+            stmt.setString(12, oblastTerapije);
+            stmt.setDate(13, Date.valueOf(datumSertifikata));
+            
+            // Execute the stored procedure
+            stmt.execute();
+            
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static void main(String[] args) {

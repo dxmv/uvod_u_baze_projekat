@@ -5,7 +5,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.CentarZaObuku;
 import model.Fakultet;
@@ -15,6 +14,7 @@ import repository.CentarZaObukuRepository;
 import repository.FakultetRepository;
 import repository.OblastTerapijeRepository;
 import repository.StepenStudijaRepository;
+import repository.TherapistRepository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -43,6 +43,7 @@ public class SignUp extends VBox {
 
 
     private Label statusLabel = new Label();
+    private TherapistRepository therapistRepository = new TherapistRepository();
 
     public SignUp(Stage stage, Scene previousScene) {
         // Set up layout
@@ -63,11 +64,19 @@ public class SignUp extends VBox {
         datumRodjField.setPromptText("Datum rođenja");
         prebivalisteField.setPromptText("Prebivalište");
         
-        // Set prompts for original fields
-
+        // Set default text values for all fields
+        imeField.setText("Marko");
+        prezimeField.setText("Marković");
+        emailField.setText("marko@example.com");
+        lozinkaField.setText("password123");
+        telefonField.setText("0601234567");
+        jmbgField.setText("1234567890123");
+        prebivalisteField.setText("Beograd");
+        psihologCheckBox.setSelected(true);
+        
         // Set date picker to current date
-        datumRodjField.setValue(LocalDate.now());
-        datumSertifikataField.setValue(LocalDate.now());
+        datumRodjField.setValue(LocalDate.of(1990, 1, 15));
+        datumSertifikataField.setValue(LocalDate.of(2022, 6, 10));
         
         // Load data for combo boxes
         loadFakulteti();
@@ -144,6 +153,11 @@ public class SignUp extends VBox {
                 setText(empty ? null : item.getIme());
             }
         });
+        
+        // Select first item if available
+        if (!fakultetComboBox.getItems().isEmpty()) {
+            fakultetComboBox.getSelectionModel().selectFirst();
+        }
     }
     
     private void loadStepenStudija() {
@@ -163,6 +177,11 @@ public class SignUp extends VBox {
                 setText(empty ? null : item.getNaziv());
             }
         });
+        
+        // Select first item if available
+        if (!stepenStudijaComboBox.getItems().isEmpty()) {
+            stepenStudijaComboBox.getSelectionModel().selectFirst();
+        }
     }
     
     private void loadCentriZaObuku() {
@@ -182,6 +201,11 @@ public class SignUp extends VBox {
                 setText(empty ? null : item.getNaziv());
             }
         });
+        
+        // Select first item if available
+        if (!centarZaObukuComboBox.getItems().isEmpty()) {
+            centarZaObukuComboBox.getSelectionModel().selectFirst();
+        }
     }
     
     private void loadOblastiTerapije() {
@@ -201,34 +225,100 @@ public class SignUp extends VBox {
                 setText(empty ? null : item.getIme());
             }
         });
+        
+        // Select first item if available
+        if (!oblastTerapijeComboBox.getItems().isEmpty()) {
+            oblastTerapijeComboBox.getSelectionModel().selectFirst();
+        }
     }
 
     private void handleRegister() {
-        String dbUrl = "jdbc:mysql://localhost:3306/savetovaliste"; // promeni naziv baze ako treba
-        String dbUser = "root"; // korisnik
-        String dbPassword = "lozinka"; // lozinka baze
-
-        String sql = "INSERT INTO Psihoterapeut (ime, prezime, email, lozinka, broj_telefona, specijalizacija, radno_iskustvo) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, imeField.getText());
-            stmt.setString(2, prezimeField.getText());
-            stmt.setString(3, emailField.getText());
-            stmt.setString(4, lozinkaField.getText());
-            stmt.setString(5, telefonField.getText());
-
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                statusLabel.setText("Registracija uspešna!");
-            } else {
-                statusLabel.setText("Greška pri registraciji.");
+        try {
+            // Get values from form fields
+            String ime = imeField.getText();
+            String prezime = prezimeField.getText();
+            String email = emailField.getText();
+            String telefon = telefonField.getText();
+            String jmbg = jmbgField.getText();
+            LocalDate datumRodj = datumRodjField.getValue();
+            String prebivaliste = prebivalisteField.getText();
+            boolean isPsiholog = psihologCheckBox.isSelected();
+            
+            // Get selected values from combo boxes
+            Fakultet fakultet = fakultetComboBox.getValue();
+            StepenStudija stepenStudija = stepenStudijaComboBox.getValue();
+            CentarZaObuku centarZaObuku = centarZaObukuComboBox.getValue();
+            OblastTerapije oblastTerapije = oblastTerapijeComboBox.getValue();
+            LocalDate datumSertifikata = datumSertifikataField.getValue();
+            
+            // Validate required fields
+            if (ime.isEmpty() || prezime.isEmpty() || email.isEmpty() || 
+                telefon.isEmpty() || jmbg.isEmpty() || prebivaliste.isEmpty() || 
+                datumRodj == null || fakultet == null || stepenStudija == null || 
+                centarZaObuku == null || oblastTerapije == null || datumSertifikata == null) {
+                
+                statusLabel.setText("Molimo popunite sva polja.");
+                statusLabel.setStyle("-fx-text-fill: red;");
+                return;
             }
-
+            
+            // Register therapist using repository
+            boolean success = therapistRepository.registerTherapist(
+                ime, 
+                prezime, 
+                email, 
+                telefon, 
+                jmbg, 
+                datumRodj, 
+                prebivaliste, 
+                isPsiholog,
+                fakultet.getIme(),
+                stepenStudija.getNaziv(),
+                centarZaObuku.getNaziv(),
+                oblastTerapije.getIme(),
+                datumSertifikata
+            );
+            
+            if (success) {
+                statusLabel.setText("Registracija uspešna!");
+                statusLabel.setStyle("-fx-text-fill: green;");
+                clearForm();
+            } else {
+                statusLabel.setText("Greška pri registraciji. Pokušajte ponovo.");
+                statusLabel.setStyle("-fx-text-fill: red;");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             statusLabel.setText("Greška: " + e.getMessage());
+            statusLabel.setStyle("-fx-text-fill: red;");
+        }
+    }
+    
+    private void clearForm() {
+        // Reset form fields after successful registration
+        imeField.clear();
+        prezimeField.clear();
+        emailField.clear();
+        lozinkaField.clear();
+        telefonField.clear();
+        jmbgField.clear();
+        prebivalisteField.clear();
+        psihologCheckBox.setSelected(false);
+        datumRodjField.setValue(LocalDate.now());
+        datumSertifikataField.setValue(LocalDate.now());
+        
+        // Reset combo boxes to first item
+        if (!fakultetComboBox.getItems().isEmpty()) {
+            fakultetComboBox.getSelectionModel().selectFirst();
+        }
+        if (!stepenStudijaComboBox.getItems().isEmpty()) {
+            stepenStudijaComboBox.getSelectionModel().selectFirst();
+        }
+        if (!centarZaObukuComboBox.getItems().isEmpty()) {
+            centarZaObukuComboBox.getSelectionModel().selectFirst();
+        }
+        if (!oblastTerapijeComboBox.getItems().isEmpty()) {
+            oblastTerapijeComboBox.getSelectionModel().selectFirst();
         }
     }
 }

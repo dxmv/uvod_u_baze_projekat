@@ -1,25 +1,28 @@
 DELIMITER $$
 
 CREATE PROCEDURE insert_terapeut (
-  IN pTelefon        VARCHAR(16),
-  IN pPrebivaliste   VARCHAR(64),
   IN pIme            VARCHAR(32),
   IN pPrezime        VARCHAR(32),
+  IN pEmail          VARCHAR(32),
+  IN pTelefon        VARCHAR(16),
   IN pJMBG           VARCHAR(16),
   IN pDatumRodj      DATE,
-  IN pEmail          VARCHAR(32),
+  IN pPrebivaliste   VARCHAR(64),
   IN pPsiholog       BOOLEAN,
-  IN pFkFakultetId   INT,
-  IN pFkCentarId     INT,
-  IN pFkStepenId     INT,
-  IN pCertDate       DATE,
-  IN pOblastIme      VARCHAR(64)
+  IN pFakultetIme    VARCHAR(100),
+  IN pStepenNaziv    VARCHAR(50),
+  IN pCentarNaziv    VARCHAR(100),
+  IN pOblastIme      VARCHAR(64),
+  IN pDatumSert      DATE
 )
 BEGIN
+  DECLARE vFakultetId INT;
+  DECLARE vStepenId INT;
+  DECLARE vCentarId INT;
   DECLARE vOblastId INT;
-  DECLARE vSertId   INT;
-
-  -- If anything goes wrong, rollback and re‑throw
+  DECLARE vSertId INT;
+  
+  -- Error handling - if anything goes wrong, rollback the entire transaction
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     ROLLBACK;
@@ -27,28 +30,82 @@ BEGIN
   END;
 
   START TRANSACTION;
+  
+    -- 1. Find fakultet ID by name
+    SELECT fakultetId INTO vFakultetId
+    FROM Fakultet
+    WHERE ime = pFakultetIme
+    LIMIT 1;
+    
+    IF vFakultetId IS NULL THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Fakultet nije pronađen';
+    END IF;
+    
+    -- 2. Find stepen studija ID by name
+    SELECT stepenId INTO vStepenId
+    FROM StepenStudija
+    WHERE naziv = pStepenNaziv
+    LIMIT 1;
+    
+    IF vStepenId IS NULL THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Stepen studija nije pronađen';
+    END IF;
+    
+    -- 3. Find centar za obuku ID by name
+    SELECT centarId INTO vCentarId
+    FROM CentarZaObuku
+    WHERE naziv = pCentarNaziv
+    LIMIT 1;
+    
+    IF vCentarId IS NULL THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Centar za obuku nije pronađen';
+    END IF;
+    
+    -- 4. Find oblast terapije ID by name
+    SELECT oblastId INTO vOblastId
+    FROM OblastTerapije
+    WHERE ime = pOblastIme
+    LIMIT 1;
+    
+    IF vOblastId IS NULL THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Oblast terapije nije pronađena';
+    END IF;
 
-    -- 1. Lookup the therapy‑field
-    SELECT oblastId
-      INTO vOblastId
-      FROM OblastTerapije
-     WHERE ime = pOblastIme
-     LIMIT 1;
-
-    -- 2. Insert the certificate
+    -- 5. Insert the certificate
     INSERT INTO Sertifikat (datumSert, fk_oblastId)
-    VALUES (pCertDate, vOblastId);
+    VALUES (pDatumSert, vOblastId);
+    
     SET vSertId = LAST_INSERT_ID();
 
-    -- 3. Insert the candidate as therapist
-    INSERT INTO Kandidat
-      (telefon, prebivaliste, ime, prezime, jmbg,
-       datumRodj, email, psiholog,
-       fk_fakultetId, fk_centarId, fk_stepenId, fk_sertId)
-    VALUES
-      (pTelefon, pPrebivaliste, pIme, pPrezime, pJMBG,
-       pDatumRodj, pEmail, pPsiholog,
-       pFkFakultetId, pFkCentarId, pFkStepenId, vSertId);
+    -- 6. Insert the candidate as therapist
+    INSERT INTO Kandidat (
+      ime, 
+      prezime, 
+      email, 
+      telefon, 
+      jmbg,
+      datumRodj, 
+      prebivaliste, 
+      psiholog,
+      fk_fakultetId, 
+      fk_stepenId, 
+      fk_centarId, 
+      fk_sertId
+    )
+    VALUES (
+      pIme, 
+      pPrezime, 
+      pEmail, 
+      pTelefon, 
+      pJMBG,
+      pDatumRodj, 
+      pPrebivaliste, 
+      pPsiholog,
+      vFakultetId, 
+      vStepenId, 
+      vCentarId, 
+      vSertId
+    );
 
   COMMIT;
 END$$
