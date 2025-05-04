@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.sql.Time;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -18,4 +19,10 @@ public class Seansa {
     private boolean besplatnaSeansa;
     private Candidate kandidat;
     private Klijent klijent;
+    private CenaPoSatu cenaPoSatu;
+    
+    // Related collections
+    private List<BeleskeSeanse> beleske;
+    private List<SeansaTest> testovi;
+    private List<ObjavaPodataka> objave;
 } 

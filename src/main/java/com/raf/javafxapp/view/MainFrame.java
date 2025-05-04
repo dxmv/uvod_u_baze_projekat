@@ -10,6 +10,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import com.raf.javafxapp.SessionManager;
+import com.raf.javafxapp.view.SeansaView;
 
 public class MainFrame extends VBox {
     private Stage stage;
@@ -54,17 +55,20 @@ public class MainFrame extends VBox {
             Button btnProfile = createStyledButton("Profil");
             Button btnLogout = createStyledButton("Odjava");
             Button btnTherapists = createStyledButton("Psihoterapeuti");
+            Button btnSeansa = createStyledButton("Pregled seanse");
             Button btnExit = createStyledButton("Izlaz");
             
             btnProfile.setOnAction(e -> openTherapistProfileView());
             btnLogout.setOnAction(e -> handleLogout());
             btnTherapists.setOnAction(e -> openTherapistsView());
+            btnSeansa.setOnAction(e -> openSeansaView());
             btnExit.setOnAction(e -> System.exit(0));
             
             getChildren().addAll(
                 btnProfile,
                 btnLogout,
                 btnTherapists,
+                btnSeansa,
                 btnExit
             );
         } else {
@@ -127,6 +131,13 @@ public class MainFrame extends VBox {
         Scene currentScene = stage.getScene();
         TherapistProfileView view = new TherapistProfileView(stage, currentScene);
         Scene newScene = new Scene((Parent)view, 500, 500);
+        stage.setScene(newScene);
+    }
+    
+    private void openSeansaView() {
+        Scene currentScene = stage.getScene();
+        SeansaView view = new SeansaView(stage, currentScene);
+        Scene newScene = new Scene((Parent)view, 800, 1000);
         stage.setScene(newScene);
     }
     
