@@ -300,6 +300,7 @@ public class SignUp extends VBox {
             LocalDate datumRodj = datumRodjField.getValue();
             String prebivaliste = prebivalisteField.getText();
             boolean isPsiholog = psihologCheckBox.isSelected();
+            String sifra = lozinkaField.getText(); // Get the password
             
             // Get selected values from combo boxes
             Fakultet fakultet = fakultetComboBox.getValue();
@@ -310,7 +311,7 @@ public class SignUp extends VBox {
             if (ime.isEmpty() || prezime.isEmpty() || email.isEmpty() || 
                 telefon.isEmpty() || jmbg.isEmpty() || prebivaliste.isEmpty() || 
                 datumRodj == null || fakultet == null || stepenStudija == null || 
-                centarZaObuku == null) {
+                centarZaObuku == null || sifra.isEmpty()) {
                 
                 statusLabel.setText("Molimo popunite sva obavezna polja.");
                 statusLabel.setStyle("-fx-text-fill: red;");
@@ -344,7 +345,8 @@ public class SignUp extends VBox {
                     stepenStudija.getNaziv(),
                     centarZaObuku.getNaziv(),
                     oblastTerapije.getIme(),
-                    datumSertifikata
+                    datumSertifikata,
+                    sifra // Pass the password
                 );
             } 
             // Registering as a candidate
@@ -382,12 +384,14 @@ public class SignUp extends VBox {
                 candidate.setFakultet(fakultet);
                 candidate.setStepenStudija(stepenStudija);
                 candidate.setCentar(centarZaObuku);
+                candidate.setSifra(sifra); // Set the password
                 
                 // Register candidate using repository
                 success = candidateRepository.insert(
                     candidate,
                     supervisorJmbg,
-                    java.sql.Date.valueOf(datumSupervizije)
+                    java.sql.Date.valueOf(datumSupervizije),
+                    sifra // Pass the password
                 );
             }
             

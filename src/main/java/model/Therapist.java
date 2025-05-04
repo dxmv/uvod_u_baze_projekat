@@ -23,4 +23,5 @@ public class Therapist {
     private CentarZaObuku centar;
     private StepenStudija stepenStudija;
     private Sertifikat sertifikat; // Has certificate
+    private String sifra; // Password field
 } 

@@ -23,4 +23,5 @@ public class Candidate {
     private CentarZaObuku centar;
     private StepenStudija stepenStudija;
     private Candidate supervisor; // Self-reference for supervisor relationship
+    private String sifra; // Password field
 } 

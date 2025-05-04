@@ -58,19 +58,21 @@ public class LoginView extends VBox {
     
     private void handleLogin() {
         String email = emailField.getText();
+        String password = passwordField.getText();
         
-        // Vrlo jednostavna validacija
-        if (email.isEmpty()) {
+        // Validate required input
+        if (email.isEmpty() || password.isEmpty()) {
             statusLabel.setText("Molimo unesite email i lozinku.");
             statusLabel.setStyle("-fx-text-fill: red;");
             return;
         }
 
         Map<String, Object> therapistInfo = therapistRepository.getTherapistInfoByEmail(email);
-        int kandidatId = (Integer) therapistInfo.get("id");
-        boolean isCertified = (Boolean) therapistInfo.get("isCertified");
+        int kandidatId = (therapistInfo.get("id") != null) ? (Integer) therapistInfo.get("id") : 0;
+        boolean isCertified = (therapistInfo.get("isCertified") != null) ? (Boolean) therapistInfo.get("isCertified") : false;
+        String storedPassword = (String) therapistInfo.get("sifra");
 
-        if (kandidatId == 0) {
+        if (kandidatId == 0 || storedPassword == null || !storedPassword.equals(password)) {
             statusLabel.setText("Neispravan email ili lozinka.");
             statusLabel.setStyle("-fx-text-fill: red;");
             return;

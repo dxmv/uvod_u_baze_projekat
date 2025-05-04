@@ -13,7 +13,8 @@ CREATE PROCEDURE insert_terapeut (
   IN pStepenNaziv    VARCHAR(50),
   IN pCentarNaziv    VARCHAR(100),
   IN pOblastIme      VARCHAR(64),
-  IN pDatumSert      DATE
+  IN pDatumSert      DATE,
+  IN pSifra          VARCHAR(32)
 )
 BEGIN
   DECLARE vFakultetId INT;
@@ -90,7 +91,8 @@ BEGIN
       fk_fakultetId, 
       fk_stepenId, 
       fk_centarId, 
-      fk_sertId
+      fk_sertId,
+      sifra
     )
     VALUES (
       pIme, 
@@ -104,7 +106,8 @@ BEGIN
       vFakultetId, 
       vStepenId, 
       vCentarId, 
-      vSertId
+      vSertId,
+      pSifra
     );
 
   COMMIT;

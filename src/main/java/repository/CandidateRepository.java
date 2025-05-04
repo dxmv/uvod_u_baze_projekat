@@ -18,10 +18,11 @@ public class CandidateRepository {
      * @param candidate The candidate to insert
      * @param supervisorJmbg JMBG of the supervisor
      * @param supervisionStartDate Date when supervision starts
+     * @param sifra Password for login
      * @return true if the insert was successful, false otherwise
      */
-    public boolean insert(Candidate candidate, String supervisorJmbg, Date supervisionStartDate) {
-        String callProcedure = "{CALL insert_kandidat_sa_supervizorom(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+    public boolean insert(Candidate candidate, String supervisorJmbg, Date supervisionStartDate, String sifra) {
+        String callProcedure = "{CALL insert_kandidat_sa_supervizorom(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(callProcedure)) {
@@ -35,15 +36,16 @@ public class CandidateRepository {
             stmt.setDate(6, new java.sql.Date(candidate.getDatumRodj().getTime()));
             stmt.setString(7, candidate.getPrebivaliste());
             stmt.setBoolean(8, candidate.isPsiholog());
+            stmt.setString(9, sifra);
             
             // Get fakultet, stepen, and centar names
-            stmt.setString(9, candidate.getFakultet().getIme());
-            stmt.setString(10, candidate.getStepenStudija().getNaziv());
-            stmt.setString(11, candidate.getCentar().getNaziv());
+            stmt.setString(10, candidate.getFakultet().getIme());
+            stmt.setString(11, candidate.getStepenStudija().getNaziv());
+            stmt.setString(12, candidate.getCentar().getNaziv());
             
             // Set supervisor JMBG and supervision start date
-            stmt.setString(12, supervisorJmbg);
-            stmt.setDate(13, supervisionStartDate);
+            stmt.setString(13, supervisorJmbg);
+            stmt.setDate(14, supervisionStartDate);
             
             // Execute the stored procedure
             stmt.execute();

@@ -86,7 +86,8 @@ public class TherapistRepository {
                     fakultet,
                     centar,
                     stepenStudija,
-                    sertifikat
+                    sertifikat,
+                    rs.getString("k.sifra")
                 );
                 
                 therapists.add(therapist);
@@ -164,7 +165,8 @@ public class TherapistRepository {
                         fakultet,
                         centar,
                         stepenStudija,
-                        sertifikat
+                        sertifikat,
+                        rs.getString("k.sifra")
                     );
                 }
             }
@@ -191,6 +193,7 @@ public class TherapistRepository {
      * @param centarZaObuku Training center name
      * @param oblastTerapije Therapy field name
      * @param datumSertifikata Certificate date
+     * @param sifra Password for login
      * @return true if registration was successful, false otherwise
      */
     public boolean registerTherapist(
@@ -206,9 +209,10 @@ public class TherapistRepository {
             String stepenStudija, 
             String centarZaObuku, 
             String oblastTerapije, 
-            LocalDate datumSertifikata) {
+            LocalDate datumSertifikata,
+            String sifra) {
         
-        String callProcedure = "{CALL insert_terapeut(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        String callProcedure = "{CALL insert_terapeut(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(callProcedure)) {
@@ -227,6 +231,7 @@ public class TherapistRepository {
             stmt.setString(11, centarZaObuku);
             stmt.setString(12, oblastTerapije);
             stmt.setDate(13, Date.valueOf(datumSertifikata));
+            stmt.setString(14, sifra);
             
             // Execute the stored procedure
             stmt.execute();
@@ -243,14 +248,15 @@ public class TherapistRepository {
      * Checks if a therapist is certified based on email and returns ID and certification status
      * 
      * @param email Therapist's email
-     * @return Map containing 'id' and 'isCertified' values
+     * @return Map containing 'id', 'isCertified' and 'sifra' values
      */
     public Map<String, Object> getTherapistInfoByEmail(String email) {
         Map<String, Object> therapistInfo = new HashMap<>();
         therapistInfo.put("id", 0);
         therapistInfo.put("isCertified", false);
+        therapistInfo.put("sifra", null);
         
-        String query = "SELECT kandidatId, fk_sertId FROM Kandidat WHERE email = ? LIMIT 1";
+        String query = "SELECT kandidatId, fk_sertId, sifra FROM Kandidat WHERE email = ? LIMIT 1";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -261,10 +267,12 @@ public class TherapistRepository {
                 if (rs.next()) {
                     int kandidatId = rs.getInt("kandidatId");
                     Object sertId = rs.getObject("fk_sertId");
+                    String sifra = rs.getString("sifra");
                     boolean isCertified = (sertId != null);
                     
                     therapistInfo.put("id", kandidatId);
                     therapistInfo.put("isCertified", isCertified);
+                    therapistInfo.put("sifra", sifra);
                 }
             }
         } catch (SQLException e) {
