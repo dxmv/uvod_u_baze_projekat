@@ -1,20 +1,5 @@
 # Roadmap
 ---
-## Pregled svih terapeuta
-- [x] Forma za pregled svih terapeuta u bazi
-- [ ] Da mogu da se edituju i brisi terapeuti
-- [ ] Napraviti procedure za editovanje i brisanje
-
-## Registracija
-- [ ] Napraviit proceduru za registraciju kandidata
-- [ ] Dodati na frontend neki kao checkbox da kada se klikne da se unose informacije o supervizoru, a ne o sertifikaciji
-
-## Login
-- [ ] Dodati password field u kandidat tabelu?
-
-# Profil
-- [ ] Da moze da se izbirse profil
-- [ ] Da moze da se menja profil
 
 ## Novi klijenti
 - [ ] Procedura za insert klijenta i seansi

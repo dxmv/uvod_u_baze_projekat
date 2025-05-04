@@ -19,7 +19,7 @@ CREATE PROCEDURE insert_kandidat_sa_supervizorom (
     IN pDatumRodj        DATE,
     IN pPrebivaliste     VARCHAR(64),
     IN pPsiholog         BOOLEAN,
-
+    IN pSifra            VARCHAR(32),
     IN pFakultetIme      VARCHAR(100),
     IN pStepenNaziv      VARCHAR(50),
     IN pCentarNaziv      VARCHAR(100),
@@ -92,12 +92,12 @@ BEGIN
     INSERT INTO Kandidat (
         ime, prezime, email, telefon, jmbg,
         datumRodj, prebivaliste, psiholog,
-        fk_fakultetId, fk_stepenId, fk_centarId, fk_sertId
+        fk_fakultetId, fk_stepenId, fk_centarId, fk_sertId, sifra
     )
     VALUES (
         pIme, pPrezime, pEmail, pTelefon, pJMBG,
         pDatumRodj, pPrebivaliste, pPsiholog,
-        vFakultetId, vStepenId, vCentarId, NULL   --  ❗ no certificate
+        vFakultetId, vStepenId, vCentarId, NULL, pSifra
     );
 
     SET vNewKandidatId = LAST_INSERT_ID();

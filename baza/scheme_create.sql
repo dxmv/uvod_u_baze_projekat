@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2025-05-01 20:56:13.846
+-- Last modification date: 2025-05-04 16:25:49.043
 
 -- tables
 -- Table: BeleskeSeanse
@@ -15,8 +15,7 @@ CREATE TABLE CenaPoSatu (
     cenaId int  NOT NULL AUTO_INCREMENT,
     cena decimal(12,2)  NOT NULL,
     datumPromene date  NOT NULL,
-    fk_seansaId int  NOT NULL,
-    CONSTRAINT CenaPoSatu_pk PRIMARY KEY (cenaId,fk_seansaId)
+    CONSTRAINT CenaPoSatu_pk PRIMARY KEY (cenaId)
 );
 
 -- Table: CentarZaObuku
@@ -61,6 +60,7 @@ CREATE TABLE Kandidat (
     fk_centarId int  NOT NULL,
     fk_stepenId int  NOT NULL,
     fk_sertId int  NULL,
+    sifra nvarchar(32)  NOT NULL,
     CONSTRAINT Kandidat_pk PRIMARY KEY (kandidatId)
 );
 
@@ -145,6 +145,7 @@ CREATE TABLE Seansa (
     besplatnaSeansa boolean  NOT NULL,
     fk_kandidatId int  NOT NULL,
     fk_klijentId int  NOT NULL,
+    fk_cenaId int  NOT NULL,
     CONSTRAINT Seansa_pk PRIMARY KEY (seansaId)
 );
 
@@ -212,13 +213,10 @@ CREATE TABLE Valuta (
 );
 
 -- foreign keys
--- Reference: CenaPoSatu_Seansa (table: CenaPoSatu)
-ALTER TABLE CenaPoSatu ADD CONSTRAINT CenaPoSatu_Seansa FOREIGN KEY CenaPoSatu_Seansa (fk_seansaId)
-    REFERENCES Seansa (seansaId);
-
 -- Reference: Fakultet_Oblast_Fakultet (table: Fakultet_Oblast)
 ALTER TABLE Fakultet_Oblast ADD CONSTRAINT Fakultet_Oblast_Fakultet FOREIGN KEY Fakultet_Oblast_Fakultet (fk_fakultetId)
-    REFERENCES Fakultet (fakultetId);
+    REFERENCES Fakultet (fakultetId)
+    ON DELETE CASCADE;
 
 -- Reference: Fakultet_Oblast_Oblast (table: Fakultet_Oblast)
 ALTER TABLE Fakultet_Oblast ADD CONSTRAINT Fakultet_Oblast_Oblast FOREIGN KEY Fakultet_Oblast_Oblast (fk_oblastId)
@@ -226,7 +224,8 @@ ALTER TABLE Fakultet_Oblast ADD CONSTRAINT Fakultet_Oblast_Oblast FOREIGN KEY Fa
 
 -- Reference: Fakultet_Univerzitet (table: Fakultet)
 ALTER TABLE Fakultet ADD CONSTRAINT Fakultet_Univerzitet FOREIGN KEY Fakultet_Univerzitet (fk_uniId)
-    REFERENCES Univerzitet (uniId);
+    REFERENCES Univerzitet (uniId)
+    ON DELETE CASCADE;
 
 -- Reference: Kandidat_CentarZaObuku (table: Kandidat)
 ALTER TABLE Kandidat ADD CONSTRAINT Kandidat_CentarZaObuku FOREIGN KEY Kandidat_CentarZaObuku (fk_centarId)
@@ -246,7 +245,8 @@ ALTER TABLE Kandidat ADD CONSTRAINT Kandidat_StepenStudija FOREIGN KEY Kandidat_
 
 -- Reference: Kandidat_Supervizor (table: Supervizija)
 ALTER TABLE Supervizija ADD CONSTRAINT Kandidat_Supervizor FOREIGN KEY Kandidat_Supervizor (fk_supervizorId)
-    REFERENCES Kandidat (kandidatId);
+    REFERENCES Kandidat (kandidatId)
+    ON DELETE CASCADE;
 
 -- Reference: Kurs_Valuta (table: Kurs)
 ALTER TABLE Kurs ADD CONSTRAINT Kurs_Valuta FOREIGN KEY Kurs_Valuta (fk_valutaId)
@@ -254,7 +254,8 @@ ALTER TABLE Kurs ADD CONSTRAINT Kurs_Valuta FOREIGN KEY Kurs_Valuta (fk_valutaId
 
 -- Reference: ObjavaPodataka_Seansa (table: ObjavaPodataka)
 ALTER TABLE ObjavaPodataka ADD CONSTRAINT ObjavaPodataka_Seansa FOREIGN KEY ObjavaPodataka_Seansa (fk_seansaId)
-    REFERENCES Seansa (seansaId);
+    REFERENCES Seansa (seansaId)
+    ON DELETE CASCADE;
 
 -- Reference: OblastTerapije_Sertifikat (table: Sertifikat)
 ALTER TABLE Sertifikat ADD CONSTRAINT OblastTerapije_Sertifikat FOREIGN KEY OblastTerapije_Sertifikat (fk_oblastId)
@@ -278,15 +279,22 @@ ALTER TABLE SeansaTest ADD CONSTRAINT SeansaTest_PsihoTest FOREIGN KEY SeansaTes
 
 -- Reference: SeansaTest_Seansa (table: SeansaTest)
 ALTER TABLE SeansaTest ADD CONSTRAINT SeansaTest_Seansa FOREIGN KEY SeansaTest_Seansa (fk_seansaId)
-    REFERENCES Seansa (seansaId);
+    REFERENCES Seansa (seansaId)
+    ON DELETE CASCADE;
 
 -- Reference: Seansa_BeleskeSeanse (table: BeleskeSeanse)
 ALTER TABLE BeleskeSeanse ADD CONSTRAINT Seansa_BeleskeSeanse FOREIGN KEY Seansa_BeleskeSeanse (fk_seansaId)
-    REFERENCES Seansa (seansaId);
+    REFERENCES Seansa (seansaId)
+    ON DELETE CASCADE;
+
+-- Reference: Seansa_CenaPoSatu (table: Seansa)
+ALTER TABLE Seansa ADD CONSTRAINT Seansa_CenaPoSatu FOREIGN KEY Seansa_CenaPoSatu (fk_cenaId)
+    REFERENCES CenaPoSatu (cenaId);
 
 -- Reference: Seansa_Kandidat (table: Seansa)
 ALTER TABLE Seansa ADD CONSTRAINT Seansa_Kandidat FOREIGN KEY Seansa_Kandidat (fk_kandidatId)
-    REFERENCES Kandidat (kandidatId);
+    REFERENCES Kandidat (kandidatId)
+    ON DELETE CASCADE;
 
 -- Reference: Seansa_Klijent (table: Seansa)
 ALTER TABLE Seansa ADD CONSTRAINT Seansa_Klijent FOREIGN KEY Seansa_Klijent (fk_klijentId)
@@ -294,7 +302,8 @@ ALTER TABLE Seansa ADD CONSTRAINT Seansa_Klijent FOREIGN KEY Seansa_Klijent (fk_
 
 -- Reference: Supervizor_Kandidat (table: Supervizija)
 ALTER TABLE Supervizija ADD CONSTRAINT Supervizor_Kandidat FOREIGN KEY Supervizor_Kandidat (fk_kandidatId)
-    REFERENCES Kandidat (kandidatId);
+    REFERENCES Kandidat (kandidatId)
+    ON DELETE CASCADE;
 
 -- Reference: Univerzitet_UzeUsmerenje (table: Univerzitet)
 ALTER TABLE Univerzitet ADD CONSTRAINT Univerzitet_UzeUsmerenje FOREIGN KEY Univerzitet_UzeUsmerenje (fk_usmrenjeId)
@@ -309,3 +318,4 @@ ALTER TABLE UzeUsmerenje_Oblast ADD CONSTRAINT UzeUsmerenje_Oblast_UzeUsmerenje 
     REFERENCES UzeUsmerenje (usmerenjeId);
 
 -- End of file.
+

@@ -96,9 +96,9 @@ INSERT INTO Fakultet (ime, fk_uniId) VALUES
   ('Ekonomski fakultet',            8);                -- 10
 
 INSERT INTO Fakultet_Oblast (fk_fakultetId, fk_oblastId) VALUES
-  (1,10),(1,6), (2,1),(2,5), (3,7), (4,1),(4,2),
+  (2,1),(2,5), (3,7), (4,1),(4,2),
   (5,5), (6,9), (7,3),(7,4), (8,3), (9,2),(9,5),
-  (10,8),(3,6),(4,6),(6,8),(2,4);                     -- 20 links
+  (10,8),(3,6),(4,6),(6,8),(2,4),(1,10);              -- 20 links
 
 INSERT INTO UzeUsmerenje_Oblast (fk_usmerenjeId, fk_oblastId) VALUES
   (1,1),(1,2),(2,5),(3,3),(4,3),(5,3),
@@ -106,7 +106,7 @@ INSERT INTO UzeUsmerenje_Oblast (fk_usmerenjeId, fk_oblastId) VALUES
 
 /* ---------- 4.  TRAINING CENTRES & TESTS ------------------------ */
 INSERT INTO CentarZaObuku (naziv,email,brojTelefona,ulica,brojUlice,opstina) VALUES
-  ('Centar “Novi početak”','info@novi.rs','+38111234567','Bulevar Kralja Aleksandra',73,'Beograd'),
+  ('Centar "Novi početak"','info@novi.rs','+38111234567','Bulevar Kralja Aleksandra',73,'Beograd'),
   ('Psiha+','kontakt@psiha.rs','+38111234568','Kralja Milana',18,'Beograd'),
   ('Institut Gestalt','info@gestalt.rs','+38111234569','Njegoševa',6,'Novi Sad'),
   ('ACT Mind Lab','team@actmind.rs','+38121455670','Bulevar oslobođenja',1,'Novi Sad'),
@@ -139,22 +139,19 @@ INSERT INTO Sertifikat (datumSert, fk_oblastId) VALUES
 
 /* ---------- 6.  KANDIDATI (5 with certs, 5 without) -------------- */
 INSERT INTO Kandidat
-  (telefon,prebivaliste,ime,prezime,jmbg,datumRodj,email,psiholog,
-   fk_fakultetId,fk_centarId,fk_stepenId,fk_sertId)
+(telefon, prebivaliste, ime, prezime, jmbg, datumRodj, email, psiholog,
+ fk_fakultetId, fk_centarId, fk_stepenId, fk_sertId, sifra)
 VALUES
-  -- Therapists (certified) – fk_sertId 1-5
-  ('+38160111111','Beograd','Ana','Petrović','0101990123456','1990-01-01','ana@ex.rs',1,1,1,1,1),
-  ('+38160111112','Novi Sad','Marko','Jovanović','0202980123457','1989-02-02','marko@ex.rs',0,2,2,2,2),
-  ('+38160111113','Niš','Ivana','Milić','0303970123458','1991-03-03','ivana@ex.rs',1,3,3,3,3),
-  ('+38160111114','Subotica','Petar','Stanković','0404960123459','1988-04-04','petar@ex.rs',0,4,4,1,4),
-  ('+38160111115','Kragujevac','Milica','Kovačević','0505950123460','1992-05-05','milica@ex.rs',1,5,5,2,5),
-
-  -- Trainees (no certificate yet)
-  ('+38160111116','Beograd','Nikola','Radović','0606940123461','1994-06-06','nikola@ex.rs',1,6,1,3,NULL),
-  ('+38160111117','Novi Sad','Jelena','Gajić','0707930123462','1993-07-07','jelena@ex.rs',0,7,2,1,NULL),
-  ('+38160111118','Niš','Vladimir','Matić','0808920123463','1995-08-08','vladimir@ex.rs',1,8,3,2,NULL),
-  ('+38160111119','Subotica','Teodora','Živković','0909910123464','1996-09-09','teodora@ex.rs',0,9,1,3,NULL),
-  ('+38160111120','Beograd','Aleksandar','Ilić','1010900123465','1990-10-10','aleksa@ex.rs',1,10,2,1,NULL);
+  ('+38160111111','Beograd','Ana','Petrović','0101990123456','1990-01-01','ana@ex.rs',1,1,1,1,1,'test'),
+  ('+38160111112','Novi Sad','Marko','Jovanović','0202980123457','1989-02-02','marko@ex.rs',0,2,2,2,2,'test'),
+  ('+38160111113','Niš','Ivana','Milić','0303970123458','1991-03-03','ivana@ex.rs',1,3,3,3,3,'test'),
+  ('+38160111114','Subotica','Petar','Stanković','0404960123459','1988-04-04','petar@ex.rs',0,4,4,1,1,'test'),
+  ('+38160111115','Kragujevac','Milica','Kovačević','0505950123460','1992-05-05','milica@ex.rs',1,5,5,2,2,'test'),
+  ('+38160111116','Beograd','Nikola','Radović','0606940123461','1994-06-06','nikola@ex.rs',1,6,6,1,NULL,'test'),
+  ('+38160111117','Novi Sad','Jelena','Gajić','0707930123462','1993-07-07','jelena@ex.rs',0,7,7,2,NULL,'test'),
+  ('+38160191118','Niš','Vladimir','Matić','0808920123463','1995-08-08','vladimir@ex.rs',1,8,8,3,NULL,'test'),
+  ('+38160191119','Subotica','Teodora','Živković','0909910123464','1996-09-09','teodora@ex.rs',0,9,9,1,NULL,'test'),
+  ('+38160191120','Beograd','Aleksandar','Ilić','1010900123465','1990-10-10','aleksa@ex.rs',1,10,10,2,NULL,'test');
 
 /* ---------- 7.  KLIJENTI ------------------------------------------ */
 INSERT INTO Klijent
@@ -171,27 +168,24 @@ VALUES
   ('Miloš','Obradović','1996-09-15','M','milos@ex.rs','+381601220009',CURDATE(),0,'Socijalna anksioznost'),
   ('Tamara','Milovanović','1990-12-01','F','tamara@ex.rs','+381601220010',CURDATE(),1,'Samopouzdanje');
 
-/* ---------- 8.  SEANSE ------------------------------------------- */
-INSERT INTO Seansa
-  (datum,vremePocetka,trajanje,besplatnaSeansa,fk_kandidatId,fk_klijentId)
-VALUES
-  (CURDATE(),'10:00:00',60,0,1,1),
-  (CURDATE(),'11:30:00',50,0,2,2),
-  (CURDATE(),'13:00:00',60,1,3,3),
-  (CURDATE(),'15:00:00',45,0,4,4),
-  (CURDATE(),'16:30:00',60,0,5,5),
-  (CURDATE(),'09:00:00',30,1,6,6),
-  (CURDATE(),'10:45:00',60,0,7,7),
-  (CURDATE(),'12:15:00',50,0,8,8),
-  (CURDATE(),'14:00:00',60,0,9,9),
-  (CURDATE(),'17:00:00',60,0,10,10);
+/* ---------- 8.  CENA PO SATU ------------------------------------- */
+INSERT INTO CenaPoSatu (cena, datumPromene) VALUES
+  (3500, CURDATE());
 
-/* ---------- 9.  CENA PO SATU ------------------------------------- */
-INSERT INTO CenaPoSatu (cena,datumPromene,fk_seansaId) VALUES
-  (3500,CURDATE(),1),(3500,CURDATE(),2),(0,CURDATE(),3),
-  (3500,CURDATE(),4),(3500,CURDATE(),5),(0,CURDATE(),6),
-  (4000,CURDATE(),7),(4000,CURDATE(),8),(3500,CURDATE(),9),
-  (3500,CURDATE(),10);
+/* ---------- 9.  SEANSE ------------------------------------------- */
+INSERT INTO Seansa
+  (datum,vremePocetka,trajanje,besplatnaSeansa,fk_kandidatId,fk_klijentId,fk_cenaId)
+VALUES
+  (CURDATE(),'10:00:00',60,0,1,1,1),
+  (CURDATE(),'11:30:00',50,0,2,2,1),
+  (CURDATE(),'13:00:00',60,1,3,3,1),
+  (CURDATE(),'15:00:00',45,0,4,4,1),
+  (CURDATE(),'16:30:00',60,0,5,5,1),
+  (CURDATE(),'09:00:00',30,1,6,6,1),
+  (CURDATE(),'10:45:00',60,0,7,7,1),
+  (CURDATE(),'12:15:00',50,0,8,8,1),
+  (CURDATE(),'14:00:00',60,0,9,9,1),
+  (CURDATE(),'17:00:00',60,0,10,10,1);
 
 /* ---------- 10.  BELESKE SEANSE ---------------------------------- */
 INSERT INTO BeleskeSeanse (text,fk_seansaId) VALUES
@@ -211,42 +205,12 @@ INSERT INTO ObjavaPodataka (datumObjave,primalac,fk_seansaId,razlog) VALUES
   (CURDATE(),'',1,'Prosleđivanje lekaru'),
   (CURDATE(),'',2,'Konzilijarna procena'),
   (CURDATE(),'',3,'Rad sa supervizorom'),
-  (CURDATE(),'',4,'Potrebno za osiguranje'),
-  (CURDATE(),'',5,'Upis u evidenciju centra'),
-  (CURDATE(),'',6,'Zakonita obaveza prijave'),
-  (CURDATE(),'',7,'Konsultacija drugog terapeuta'),
-  (CURDATE(),'',8,'Istraživački projekat'),
-  (CURDATE(),'',9,'Sudski postupak'),
-  (CURDATE(),'',10,'Suglasnost klijenta');
+  (CURDATE(),'',4,'Konsultacija sa psihologom'),
+  (CURDATE(),'',5,'Praktični savet'),
+  (CURDATE(),'',6,'Psihološka procena'),
+  (CURDATE(),'',7,'Terapijska strategija'),
+  (CURDATE(),'',8,'Kognitivna terapija'),
+  (CURDATE(),'',9,'Praktični savet'),
+  (CURDATE(),'',10,'Konsultacija');
 
-/* ---------- 12.  SEANSA-TEST ------------------------------------ */
-INSERT INTO SeansaTest (rezultat,fk_seansaId,fk_psihoTestId) VALUES
-  (65,1,1),(18,2,2),(22,3,3),(105,4,4),(42,5,5),
-  (30,6,6),(85,7,7),(15,8,8),(78,9,9),(26,10,10);
-
-/* ---------- 13.  PLAĆANJE --------------------------------------- */
-INSERT INTO Placanje
-  (rata,iznos,provizija,datum,nacinPlacanja,Seansa_seansaId,
-   fk_klijentId,fk_valutaId,svrha)
-VALUES
-  (1,3500,0,CURDATE(),'kartica',1,1,1,'Plaćanje seanse'),
-  (1,3500,0,CURDATE(),'keš',    2,2,1,'Plaćanje seanse'),
-  (1,   0,0,CURDATE(),'nema',   3,3,1,'Besplatna seansa'),
-  (1,3500,0,CURDATE(),'kartica',4,4,1,'Plaćanje seanse'),
-  (1,3500,0,CURDATE(),'keš',    5,5,1,'Plaćanje seanse'),
-  (1,   0,0,CURDATE(),'nema',   6,6,1,'Besplatna seansa'),
-  (1,4000,0,CURDATE(),'kartica',7,7,1,'Povećana cena'),
-  (1,4000,0,CURDATE(),'keš',    8,8,1,'Povećana cena'),
-  (1,3500,0,CURDATE(),'kartica',9,9,1,'Plaćanje seanse'),
-  (1,3500,0,CURDATE(),'keš',   10,10,1,'Plaćanje seanse');
-
-/* ---------- 14.  SUPERVIZIJA (5 PAIRS) -------------------------- */
-INSERT INTO Supervizija (datumPocetka,datumKraja,fk_kandidatId,fk_supervizorId) VALUES
-  ('2025-01-01',NULL, 6,1),
-  ('2025-01-15',NULL, 7,2),
-  ('2025-02-01',NULL, 8,3),
-  ('2025-02-15',NULL, 9,4),
-  ('2025-03-01',NULL,10,5);
-
-/* ================================================================ */
 COMMIT;

@@ -1,2 +1,2 @@
 ALTER TABLE Kandidat ADD UNIQUE (email);
-ALTER TABLE Klijent ADD UNIQUE (jmbg);
+ALTER TABLE Kandidat ADD UNIQUE (jmbg);
