@@ -1,9 +1,10 @@
 package repository;
 
+import com.raf.javafxapp.DatabaseConnection;
 import model.ObjavaPodataka;
 import model.Primalac;
-import model.Seansa;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,8 +14,24 @@ import java.util.Date;
 import java.util.List;
 
 public class ObjavaPodatakaRepository {
-    public boolean save(int seasnaId, Date datum, String primalac, String razlog) {
-        return true;
+    public boolean save(int seansaId, Date datum, String primalacNaziv, String razlog) {
+        String procedureCall = "{call insert_objava(?, ?, ?, ?)}";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(procedureCall)) {
+            
+            stmt.setDate(1, new java.sql.Date(datum.getTime()));
+            stmt.setString(2, primalacNaziv);
+            stmt.setString(3, razlog);
+            stmt.setInt(4, seansaId);
+            
+            stmt.execute();
+            return true;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**

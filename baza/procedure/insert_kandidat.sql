@@ -1,12 +1,4 @@
-/* -----------------------------------------------------------
-   Procedure: insert_kandidat_sa_supervizorom
-   Purpose  : Insert a candidate (Kandidat) who has a supervisor
-              but NO certificate.
-   Notes    :
-     • Supervisor is identified by JMBG (unique for every person).
-     • You must pass the date on which supervision starts.
-     • The procedure fails cleanly (ROLLBACK) if anything is missing.
-   ----------------------------------------------------------- */
+
 
 DELIMITER $$
 
