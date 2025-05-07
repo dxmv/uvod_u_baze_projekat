@@ -174,7 +174,8 @@ public class SeansaView extends VBox {
         List<ObjavaPodataka> objave = seansa.getObjave();
         if (objave != null && !objave.isEmpty()) {
             for (ObjavaPodataka objava : objave) {
-                detailsPane.add(new Label("Datum objave: " + dateFormat.format(objava.getDatumObjave())), 0, row++);
+                detailsPane.add(new Label("Datum objave: " + dateFormat.format(objava.getDatumObjave())), 0, row);
+                detailsPane.add(new Label("Primalac: " + objava.getPrimalac().getNaziv()), 1, row++);
                 detailsPane.add(new Label("Razlog: " + objava.getRazlog()), 0, row++, 2, 1);
             }
         } else {

@@ -1,16 +1,9 @@
 package repository;
 
 import com.raf.javafxapp.DatabaseConnection;
-import model.Seansa;
-import model.SeansaTest;
-import model.BeleskeSeanse;
-import model.ObjavaPodataka;
-import model.CenaPoSatu;
-import model.Klijent;
-import model.PsihoTest;
+import model.*;
 
 import java.sql.*;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,7 +175,7 @@ public class SeansaRepository {
                     seansa.setTestovi(testovi);
                     
                     // Fetch and add ObjavaPodataka
-                    List<ObjavaPodataka> objave = getObjaveForSeansa(sessionId, conn);
+                    List<ObjavaPodataka> objave = ObjavaPodatakaRepository.getObjaveForSeansa(sessionId, conn);
                     seansa.setObjave(objave);
                 }
             }
@@ -250,29 +243,5 @@ public class SeansaRepository {
         
         return testovi;
     }
-    
-    /**
-     * Get all ObjavaPodataka for a specific Seansa
-     */
-    private List<ObjavaPodataka> getObjaveForSeansa(int seansaId, Connection conn) throws SQLException {
-        String query = "SELECT * FROM ObjavaPodataka WHERE fk_seansaId = ?";
-        List<ObjavaPodataka> objave = new ArrayList<>();
-        
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, seansaId);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    ObjavaPodataka objava = new ObjavaPodataka();
-                    objava.setObjavaId(rs.getInt("objavaId"));
-                    objava.setDatumObjave(rs.getDate("datumObjave"));
-                    objava.setPrimalac(rs.getBytes("primalac"));
-                    objava.setRazlog(rs.getString("razlog"));
-                    objave.add(objava);
-                }
-            }
-        }
-        
-        return objave;
-    }
+
 }

@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2025-05-04 16:25:49.043
+-- Last modification date: 2025-05-07 22:20:53.984
 
 -- tables
 -- Table: BeleskeSeanse
@@ -92,9 +92,9 @@ CREATE TABLE Kurs (
 CREATE TABLE ObjavaPodataka (
     objavaId int  NOT NULL AUTO_INCREMENT,
     datumObjave date  NOT NULL,
-    primalac longblob  NOT NULL,
     fk_seansaId int  NOT NULL,
     razlog text  NOT NULL,
+    primalacId int  NOT NULL,
     CONSTRAINT ObjavaPodataka_pk PRIMARY KEY (objavaId)
 );
 
@@ -125,6 +125,13 @@ CREATE TABLE Placanje (
     fk_valutaId int  NOT NULL,
     svrha text  NOT NULL,
     CONSTRAINT Placanje_pk PRIMARY KEY (placanjeId)
+);
+
+-- Table: Primalac
+CREATE TABLE Primalac (
+    primalacId int  NOT NULL,
+    naziv nvarchar(32)  NOT NULL,
+    CONSTRAINT Primalac_pk PRIMARY KEY (primalacId)
 );
 
 -- Table: PsihoTest
@@ -252,6 +259,10 @@ ALTER TABLE Supervizija ADD CONSTRAINT Kandidat_Supervizor FOREIGN KEY Kandidat_
 ALTER TABLE Kurs ADD CONSTRAINT Kurs_Valuta FOREIGN KEY Kurs_Valuta (fk_valutaId)
     REFERENCES Valuta (valutaId);
 
+-- Reference: ObjavaPodataka_Primalac (table: ObjavaPodataka)
+ALTER TABLE ObjavaPodataka ADD CONSTRAINT ObjavaPodataka_Primalac FOREIGN KEY ObjavaPodataka_Primalac (primalacId)
+    REFERENCES Primalac (primalacId);
+
 -- Reference: ObjavaPodataka_Seansa (table: ObjavaPodataka)
 ALTER TABLE ObjavaPodataka ADD CONSTRAINT ObjavaPodataka_Seansa FOREIGN KEY ObjavaPodataka_Seansa (fk_seansaId)
     REFERENCES Seansa (seansaId)
@@ -267,7 +278,8 @@ ALTER TABLE Placanje ADD CONSTRAINT Placanje_Klijent FOREIGN KEY Placanje_Klijen
 
 -- Reference: Placanje_Seansa (table: Placanje)
 ALTER TABLE Placanje ADD CONSTRAINT Placanje_Seansa FOREIGN KEY Placanje_Seansa (Seansa_seansaId)
-    REFERENCES Seansa (seansaId);
+    REFERENCES Seansa (seansaId)
+    ON DELETE CASCADE;
 
 -- Reference: Placanje_Valuta (table: Placanje)
 ALTER TABLE Placanje ADD CONSTRAINT Placanje_Valuta FOREIGN KEY Placanje_Valuta (fk_valutaId)

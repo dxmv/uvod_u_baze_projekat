@@ -200,17 +200,23 @@ INSERT INTO BeleskeSeanse (text,fk_seansaId) VALUES
   ('Vežbe za javni nastup',9),
   ('Rad na samopouzdanju',10);
 
-/* ---------- 11.  OBJAVA PODATAKA -------------------------------- */
-INSERT INTO ObjavaPodataka (datumObjave,primalac,fk_seansaId,razlog) VALUES
-  (CURDATE(),'',1,'Prosleđivanje lekaru'),
-  (CURDATE(),'',2,'Konzilijarna procena'),
-  (CURDATE(),'',3,'Rad sa supervizorom'),
-  (CURDATE(),'',4,'Konsultacija sa psihologom'),
-  (CURDATE(),'',5,'Praktični savet'),
-  (CURDATE(),'',6,'Psihološka procena'),
-  (CURDATE(),'',7,'Terapijska strategija'),
-  (CURDATE(),'',8,'Kognitivna terapija'),
-  (CURDATE(),'',9,'Praktični savet'),
-  (CURDATE(),'',10,'Konsultacija');
+/* ---------- 11.  PRIMALAC --------------------------------------- */
+INSERT INTO Primalac (primalacId, naziv) VALUES
+  (1, 'Supervizor'),
+  (2, 'Policies'),
+  (3, 'Sud');
+
+/* ---------- 12.  OBJAVA PODATAKA -------------------------------- */
+INSERT INTO ObjavaPodataka (datumObjave,primalacId,fk_seansaId,razlog) VALUES
+  (CURDATE(),1,1,'Prosleđivanje lekaru'),
+  (CURDATE(),2,2,'Konzilijarna procena'),
+  (CURDATE(),1,3,'Rad sa supervizorom'),
+  (CURDATE(),2,4,'Konsultacija sa psihologom'),
+  (CURDATE(),3,5,'Praktični savet'),
+  (CURDATE(),1,6,'Psihološka procena'),
+  (CURDATE(),2,7,'Terapijska strategija'),
+  (CURDATE(),1,8,'Kognitivna terapija'),
+  (CURDATE(),3,9,'Praktični savet'),
+  (CURDATE(),2,10,'Konsultacija');
 
 COMMIT;

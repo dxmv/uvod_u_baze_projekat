@@ -25,6 +25,7 @@
 - [ ] Ili da se update termin ako je u buducnosti
 
 ## Objavljivanje podatka
+- [ ] Dodati tabelu primalac?
 - [ ] Kada user klikne dugme otvara se novi prozor za insert podataka o objavljivanju
 - [ ] Prosta procedura za insertovanje objave
 
@@ -34,7 +35,7 @@
 ## Testovi
 - [ ] Mzd isto kao gore, samo za testove?
 
-##  Formu za pregled uplata i dugovanja klijenata, sa podacima o prekoračenjima rokova plaćanja
+## Formu za pregled uplata i dugovanja klijenata, sa podacima o prekoračenjima rokova plaćanja
 - [ ] Query za getovanje svih uplata za sve seanse trenutnog terapeuta
 - [ ] Napraviti isto novi prozor
 - [ ] Gde prikazujemo dugovanja i odradjene uplate u dve razlicite sekcije

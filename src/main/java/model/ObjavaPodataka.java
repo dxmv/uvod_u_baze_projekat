@@ -12,7 +12,7 @@ import java.util.Date;
 public class ObjavaPodataka {
     private int objavaId;
     private Date datumObjave;
-    private byte[] primalac;
     private String razlog;
     private Seansa seansa;
+    private Primalac primalac;
 } 
