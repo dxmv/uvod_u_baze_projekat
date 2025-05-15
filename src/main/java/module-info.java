@@ -4,6 +4,7 @@ module com.raf.javafxapp {
     requires java.sql;
     requires static lombok;
     requires java.desktop;
+    requires jdk.jdi;
 
     opens model;
     opens com.raf.javafxapp to javafx.fxml;

@@ -56,12 +56,18 @@ public class MainFrame extends VBox {
             Button btnLogout = createStyledButton("Odjava");
             Button btnTherapists = createStyledButton("Psihoterapeuti");
             Button btnSeansa = createStyledButton("Pregled seanse");
+            Button btnPregledPrijava = createStyledButton("Novi klijenti");
+            Button btnFutureSessions = createStyledButton("Buduce seanse");
             Button btnExit = createStyledButton("Izlaz");
-            
+            Button btnPayments=createStyledButton("Pregled placanja");
+
+            btnPayments.setOnAction(e->openPaymentView());
             btnProfile.setOnAction(e -> openTherapistProfileView());
             btnLogout.setOnAction(e -> handleLogout());
             btnTherapists.setOnAction(e -> openTherapistsView());
             btnSeansa.setOnAction(e -> openSeansaView());
+            btnFutureSessions.setOnAction(e->openNoveSeanseView());
+            btnPregledPrijava.setOnAction(e->openPregledPrijavaView());
             btnExit.setOnAction(e -> System.exit(0));
             
             getChildren().addAll(
@@ -69,6 +75,10 @@ public class MainFrame extends VBox {
                 btnLogout,
                 btnTherapists,
                 btnSeansa,
+                btnFutureSessions,
+                btnPregledPrijava,
+
+                btnPayments,
                 btnExit
             );
         } else {
@@ -119,25 +129,38 @@ public class MainFrame extends VBox {
         Scene newScene = new Scene((Parent)scrollPane, 500, 600);
         stage.setScene(newScene);
     }
-    
+
     private void openTherapistsView() {
         Scene currentScene = stage.getScene();
         AllTherapistsView view = new AllTherapistsView(stage, currentScene);
         Scene newScene = new Scene((Parent)view, 800, 400);
         stage.setScene(newScene);
     }
-    
+    private  void openPaymentView(){
+        PaymentsAndDebtsView view = new PaymentsAndDebtsView(stage, stage.getScene());
+        stage.setScene(new Scene(view, 900, 600));
+    }
     private void openTherapistProfileView() {
         Scene currentScene = stage.getScene();
         TherapistProfileView view = new TherapistProfileView(stage, currentScene);
         Scene newScene = new Scene((Parent)view, 500, 500);
         stage.setScene(newScene);
     }
-    
+    private void openNoveSeanseView() {
+        int therapistId = SessionManager.getInstance().getLoggedInKandidatId();
+        FutureSessionsView view = new FutureSessionsView(stage, stage.getScene(), therapistId);
+        stage.setScene(new Scene(view, 900, 600));
+    }
     private void openSeansaView() {
         Scene currentScene = stage.getScene();
         SeansaView view = new SeansaView(stage, currentScene);
         Scene newScene = new Scene((Parent)view, 800, 1000);
+        stage.setScene(newScene);
+    }
+    private void openPregledPrijavaView() {
+        Scene currentScene = stage.getScene();
+        PregledPrijavaView view = new PregledPrijavaView(stage, currentScene);
+        Scene newScene = new Scene(view, 900, 600);
         stage.setScene(newScene);
     }
     

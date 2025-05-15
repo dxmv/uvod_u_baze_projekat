@@ -1,5 +1,6 @@
 package com.raf.javafxapp.view;
 
+import com.raf.javafxapp.SessionManager;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -75,7 +76,7 @@ public class SeansaView extends VBox {
         // In a real application, you would get the therapist ID from the logged-in user
         SeansaRepository seansaRepository = new SeansaRepository();
         // Using therapist ID 1 for demonstration
-        seansaComboBox.getItems().addAll(seansaRepository.getAllSessions(1));
+        seansaComboBox.getItems().addAll(seansaRepository.getAllSessions(SessionManager.getInstance().getLoggedInKandidatId()));
         
         // Select first item if available
         if (!seansaComboBox.getItems().isEmpty()) {
