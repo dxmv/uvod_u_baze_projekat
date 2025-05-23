@@ -61,6 +61,7 @@ public class MainFrame extends VBox {
             Button btnPastSessions = createStyledButton("Prosle seanse");
             Button btnExit = createStyledButton("Izlaz");
             Button btnPayments=createStyledButton("Pregled placanja");
+            Button btnScheduleSeansa = createStyledButton("Zakaži novu seansu");
 
             btnPayments.setOnAction(e->openPaymentView());
             btnProfile.setOnAction(e -> openTherapistProfileView());
@@ -70,6 +71,7 @@ public class MainFrame extends VBox {
             btnFutureSessions.setOnAction(e->openNoveSeanseView());
             btnPastSessions.setOnAction(e -> openPastSessionsView());
             btnPregledPrijava.setOnAction(e->openPregledPrijavaView());
+            btnScheduleSeansa.setOnAction(e -> openScheduleSeansaView());
             btnExit.setOnAction(e -> System.exit(0));
             
             getChildren().addAll(
@@ -80,7 +82,7 @@ public class MainFrame extends VBox {
                 btnFutureSessions,
                 btnPastSessions,
                 btnPregledPrijava,
-
+                btnScheduleSeansa,
                 btnPayments,
                 btnExit
             );
@@ -169,6 +171,13 @@ public class MainFrame extends VBox {
         Scene currentScene = stage.getScene();
         PregledPrijavaView view = new PregledPrijavaView(stage, currentScene);
         Scene newScene = new Scene(view, 900, 600);
+        stage.setScene(newScene);
+    }
+    
+    private void openScheduleSeansaView() {
+        Scene currentScene = stage.getScene();
+        ScheduleSeansaView view = new ScheduleSeansaView(stage, currentScene);
+        Scene newScene = new Scene(view, 600, 750); 
         stage.setScene(newScene);
     }
     

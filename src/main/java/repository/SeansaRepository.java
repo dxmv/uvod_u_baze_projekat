@@ -244,4 +244,86 @@ public class SeansaRepository {
         return testovi;
     }
 
+    /**
+     * Calls the stored procedure InsertSeansa to insert a new session for an existing client.
+     * The therapist ID is retrieved from the SessionManager.
+     *
+     * @param seansa The Seansa object containing session details (datum, vremePocetka, trajanje, besplatnaSeansa).
+     * @param klijentId The ID of the existing client for this session.
+     * @return true if the session was inserted successfully, false otherwise.
+     */
+    public boolean insertSeansa(Seansa seansa, int klijentId) {
+        String callProcedure = "{CALL InsertSeansa(?, ?, ?, ?, ?, ?)}";
+        int loggedInKandidatId = com.raf.javafxapp.SessionManager.getInstance().getLoggedInKandidatId();
+
+        if (loggedInKandidatId <= 0) {
+            System.err.println("No therapist logged in. Cannot insert seansa.");
+            return false;
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement cstmt = conn.prepareCall(callProcedure)) {
+
+            cstmt.setDate(1, new java.sql.Date(seansa.getDatum().getTime()));
+            cstmt.setTime(2, seansa.getVremePocetka());
+            cstmt.setInt(3, seansa.getTrajanje());
+            cstmt.setBoolean(4, seansa.isBesplatnaSeansa());
+            cstmt.setInt(5, loggedInKandidatId); // fk_kandidatId from SessionManager
+            cstmt.setInt(6, klijentId); // fk_klijentId
+
+            int affectedRows = cstmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Calls the stored procedure InsertKlijentAndSeansa to insert a new client and then a new session for them.
+     * The therapist ID for the session is retrieved from the SessionManager.
+     *
+     * @param klijent The Klijent object containing new client details.
+     * @param seansa The Seansa object containing session details (datum, vremePocetka, trajanje, besplatnaSeansa).
+     * @return true if the client and session were inserted successfully, false otherwise.
+     */
+    public boolean insertKlijentAndSeansa(Klijent klijent, Seansa seansa) {
+        String callProcedure = "{CALL InsertKlijentAndSeansa(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        int loggedInKandidatId = com.raf.javafxapp.SessionManager.getInstance().getLoggedInKandidatId();
+
+        if (loggedInKandidatId <= 0) {
+            System.err.println("No therapist logged in. Cannot insert klijent and seansa.");
+            return false;
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement cstmt = conn.prepareCall(callProcedure)) {
+
+            // Klijent parameters
+            cstmt.setString(1, klijent.getIme());
+            cstmt.setString(2, klijent.getPrezime());
+            cstmt.setDate(3, new java.sql.Date(klijent.getDatumRodj().getTime()));
+            cstmt.setString(4, klijent.getPol());
+            cstmt.setString(5, klijent.getEmail());
+            cstmt.setString(6, klijent.getTelefon());
+            cstmt.setDate(7, new java.sql.Date(klijent.getDatumPrijave().getTime()));
+            cstmt.setBoolean(8, klijent.isRanijePosetio());
+            cstmt.setString(9, klijent.getOpisProblema());
+
+            // Seansa parameters
+            cstmt.setDate(10, new java.sql.Date(seansa.getDatum().getTime()));
+            cstmt.setTime(11, seansa.getVremePocetka());
+            cstmt.setInt(12, seansa.getTrajanje());
+            cstmt.setBoolean(13, seansa.isBesplatnaSeansa());
+            cstmt.setInt(14, loggedInKandidatId); // p_seansa_fk_kandidatId from SessionManager
+
+            int affectedRows = cstmt.executeUpdate();
+            return affectedRows > 0; // Check if procedure executed, though it involves two inserts
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
