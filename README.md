@@ -9,12 +9,13 @@
 ## Pregled odrzanih seansi
 - [x] Samo select na osnovu datuma seansi
 - [x] Dodati index
-- [ ] Napraviti prost gui
+- [x] Napraviti prost gui
 
 ## Pregled buducih seansi
 - [x] Samo select na osnovu datuma seansi
 - [x] Dodati index
-- [ ] Napraviti prost gui
+- [x] Napraviti prost gui
+- [ ] Proveriti da li je dobar
 
 ## Pregled seanse
 - [x] Query za getovanje svih seansaId za ulgovanog terapeuta
@@ -25,15 +26,9 @@
 - [ ] Ili da se update termin ako je u buducnosti
 
 ## Objavljivanje podatka
-- [ ] Dodati tabelu primalac?
+- [x] Dodati tabelu primalac?
+- [x] Prosta procedura za insertovanje objave
 - [ ] Kada user klikne dugme otvara se novi prozor za insert podataka o objavljivanju
-- [ ] Prosta procedura za insertovanje objave
-
-## Beleske
-- [ ] Mzd isto kao gore, samo za beleske?
-
-## Testovi
-- [ ] Mzd isto kao gore, samo za testove?
 
 ## Formu za pregled uplata i dugovanja klijenata, sa podacima o prekoračenjima rokova plaćanja
 - [ ] Query za getovanje svih uplata za sve seanse trenutnog terapeuta

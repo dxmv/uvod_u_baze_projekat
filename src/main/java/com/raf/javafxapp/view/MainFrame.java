@@ -58,6 +58,7 @@ public class MainFrame extends VBox {
             Button btnSeansa = createStyledButton("Pregled seanse");
             Button btnPregledPrijava = createStyledButton("Novi klijenti");
             Button btnFutureSessions = createStyledButton("Buduce seanse");
+            Button btnPastSessions = createStyledButton("Prosle seanse");
             Button btnExit = createStyledButton("Izlaz");
             Button btnPayments=createStyledButton("Pregled placanja");
 
@@ -67,6 +68,7 @@ public class MainFrame extends VBox {
             btnTherapists.setOnAction(e -> openTherapistsView());
             btnSeansa.setOnAction(e -> openSeansaView());
             btnFutureSessions.setOnAction(e->openNoveSeanseView());
+            btnPastSessions.setOnAction(e -> openPastSessionsView());
             btnPregledPrijava.setOnAction(e->openPregledPrijavaView());
             btnExit.setOnAction(e -> System.exit(0));
             
@@ -76,6 +78,7 @@ public class MainFrame extends VBox {
                 btnTherapists,
                 btnSeansa,
                 btnFutureSessions,
+                btnPastSessions,
                 btnPregledPrijava,
 
                 btnPayments,
@@ -149,6 +152,11 @@ public class MainFrame extends VBox {
     private void openNoveSeanseView() {
         int therapistId = SessionManager.getInstance().getLoggedInKandidatId();
         FutureSessionsView view = new FutureSessionsView(stage, stage.getScene(), therapistId);
+        stage.setScene(new Scene(view, 900, 600));
+    }
+    private void openPastSessionsView() {
+        int therapistId = SessionManager.getInstance().getLoggedInKandidatId();
+        PastSessionsView view = new PastSessionsView(stage, stage.getScene(), therapistId);
         stage.setScene(new Scene(view, 900, 600));
     }
     private void openSeansaView() {

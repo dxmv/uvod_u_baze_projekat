@@ -16,7 +16,6 @@ import java.util.List;
 public class ObjavaPodatakaRepository {
     public boolean save(int seansaId, Date datum, String primalacNaziv, String razlog) {
         String procedureCall = "{call insert_objava(?, ?, ?, ?)}";
-        
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(procedureCall)) {
             
