@@ -13,6 +13,7 @@ import model.ObjavaPodataka;
 import model.Seansa;
 import model.SeansaTest;
 import repository.SeansaRepository;
+import com.raf.javafxapp.view.AddObjavaPodatakaView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -182,5 +183,20 @@ public class SeansaView extends VBox {
         } else {
             detailsPane.add(new Label("Nema objava podataka"), 0, row++);
         }
+
+        // Add Button for adding ObjavaPodataka
+        Button addObjavaButton = new Button("Dodaj Objavu Podataka");
+        addObjavaButton.setOnAction(event -> {
+            AddObjavaPodatakaView addObjavaView = new AddObjavaPodatakaView(stage, seansaId);
+            Scene addObjavaScene = new Scene(addObjavaView, 450, 350); 
+            Stage addObjavaStage = new Stage();
+            addObjavaStage.setTitle("Dodaj Objavu Podataka za Seansu ID: " + seansaId);
+            addObjavaStage.setScene(addObjavaScene);
+            addObjavaStage.initOwner(stage); 
+            addObjavaStage.show();
+        });
+        
+        detailsPane.add(addObjavaButton, 0, row, 2, 1); // Add button to the grid
+        // The row variable does not need to be incremented here if this is the last element.
     }
 } 
